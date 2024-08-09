@@ -317,9 +317,6 @@ namespace IATK
             if (theVisualizationObject != null)
                 RuntimeEditorLoadAndSaveConfiguration();
 
-            DropdownManager dropdownManager = GetComponent<DropdownManager>();
-            var options = dataSource.Select(item => item.Identifier).ToList();
-            dropdownManager.PopulateDropdown(options);
         }
 
         void RuntimeEditorLoadAndSaveConfiguration()
@@ -527,47 +524,6 @@ namespace IATK
             destroyView();
 
         }
-
-        // OWN CODE
-        public void setXDimension(int index)
-        {
-            if (index == -1)
-            {
-                xDimension = new DimensionFilter { Attribute = "Undefined" };
-                updateViewProperties(AbstractVisualisation.PropertyType.X);
-                return;
-            }
-            var options = dataSource.Select(item => item.Identifier).ToList();
-            xDimension = new DimensionFilter { Attribute = options[index - 1] };
-            updateViewProperties(AbstractVisualisation.PropertyType.X);
-        }
-
-        public void setYDimension(int index)
-        {
-            if (index == -1)
-            {
-                yDimension = new DimensionFilter { Attribute = "Undefined" };
-                updateViewProperties(AbstractVisualisation.PropertyType.Y);
-                return;
-            }
-            var options = dataSource.Select(item => item.Identifier).ToList();
-            yDimension = new DimensionFilter { Attribute = options[index - 1] };
-            updateViewProperties(AbstractVisualisation.PropertyType.Y);
-        }
-
-        public void setZDimension(int index)
-        {
-            if (index == -1)
-            {
-                zDimension = new DimensionFilter { Attribute = "Undefined" };
-                updateViewProperties(AbstractVisualisation.PropertyType.Z);
-                return;
-            }
-            var options = dataSource.Select(item => item.Identifier).ToList();
-            zDimension = new DimensionFilter { Attribute = options[index - 1] };
-            updateViewProperties(AbstractVisualisation.PropertyType.Z);
-        }
-
 
     }
 
