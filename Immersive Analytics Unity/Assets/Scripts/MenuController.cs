@@ -1,20 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.XR.Interaction.Toolkit;
-
 
 public class MenuController : MonoBehaviour
 {
     // Whether the menu is shown
-    public bool isMenuShown = false;
+    public bool isMenuShown;
 
     // The prefab to create
-    public GameObject visualisationPrefab;
+    public GameObject prefab;
 
-    private bool isMoveMode = false;
-    private bool isDeleteMode = false;
+    private bool _isMoveMode;
+    private bool _isDeleteMode;
 
     private void Start()
     {
@@ -29,18 +24,21 @@ public class MenuController : MonoBehaviour
 
     public void OnCreateButtonPressed()
     {
-        Transform spawnLocation = Camera.main.transform;
-        Instantiate(visualisationPrefab, spawnLocation.position, spawnLocation.rotation);
+        Transform spawnLocation = Camera.main?.transform;
+        if (spawnLocation != null)
+        {
+            Instantiate(prefab, spawnLocation.position, spawnLocation.rotation);
+        }
     }
 
     public void OnMoveButtonPressed()
     {
-        isMoveMode = !isMoveMode;
-        isDeleteMode = false;
+        _isMoveMode = !_isMoveMode;
+        _isDeleteMode = false;
 
         GameObject[] moveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
 
-        if (isMoveMode)
+        if (_isMoveMode)
         {
             // Enable the move mode
             Debug.Log("Move mode enabled");
@@ -70,10 +68,10 @@ public class MenuController : MonoBehaviour
 
     public void OnDeleteButtonPressed()
     {
-        isMoveMode = false;
-        isDeleteMode = !isDeleteMode;
+        _isMoveMode = false;
+        _isDeleteMode = !_isDeleteMode;
 
-        if (isDeleteMode)
+        if (_isDeleteMode)
         {
             // Enable the delete mode
             Debug.Log("Delete mode enabled");

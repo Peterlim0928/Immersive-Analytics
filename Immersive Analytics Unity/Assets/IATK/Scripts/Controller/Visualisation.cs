@@ -67,7 +67,7 @@ namespace IATK
         public DimensionFilter[] parallelCoordinatesDimensions;
 
         [Tooltip("The dimension to map the colour to")]
-        public string colourDimension;
+        public string colourDimension = "Undefined";
 
         [Tooltip("The colour gradient used to map to the colour data dimension")]
         public Gradient dimensionColour;
@@ -79,7 +79,7 @@ namespace IATK
         public string blendingModeDestination = UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha.ToString();
 
         [Tooltip("The dimension to map the size to")]
-        public string sizeDimension;
+        public string sizeDimension = "Undefined";
 
         [Tooltip("The dimension that links data points for trajectories")]
         public string linkingDimension;
@@ -112,7 +112,7 @@ namespace IATK
         public float height = 1.0f;
         public float depth = 1.0f;
 
-        public string colorPaletteDimension;
+        public string colorPaletteDimension = "Undefined";
 
         [HideInInspector]
         public AbstractVisualisation theVisualizationObject;// = null;
@@ -150,8 +150,8 @@ namespace IATK
             }
 
             //destroy previous key
-            if(key!=null)
-            DestroyImmediate(key.gameObject);
+            if(key != null)
+                DestroyImmediate(key.gameObject);
 
             visualisationType = visualizationType;
 
@@ -239,8 +239,8 @@ namespace IATK
             if (theVisualizationObject == null) CreateVisualisation(visualisationType);
             theVisualizationObject.UpdateVisualisation(propertyType);
 
-            if(OnUpdateViewAction!=null)
-            OnUpdateViewAction(propertyType);
+            if(OnUpdateViewAction != null)
+                OnUpdateViewAction(propertyType);
 
             if (key != null)
             {

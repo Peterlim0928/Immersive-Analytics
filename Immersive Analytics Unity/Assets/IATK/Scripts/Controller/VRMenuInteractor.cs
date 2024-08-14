@@ -34,72 +34,15 @@ namespace IATK
         public Slider Z_Axis_SliderMinFilter;
         public Slider Z_Axis_SliderMaxFilter;
 
-        /**
-         * Input Fields for Stock Options
-         */
-        public TMP_InputField Stock_Code_Option;
-        public TMP_Dropdown Stock_Time_Interval_DropDown;
-        public Button Stock_Search_Button;
-
         //holds the string names of the data attributes
         private List<string> DataAttributesNames;
-
-        // stores the list of data source options
-        private List<string> DataSourceNames;
         
-        // stores the list of stock time options
-        private List<string> StockTimeOptions;
-        
-        // mapping the stock time options
-        private Dictionary<string, string> stockOptionsDictionary = new Dictionary<string, string>()
-        {
-            {"1 Day", "1d"},
-            {"5 Days", "5d"},
-            {"1 Month", "1mo"},
-            {"3 Months", "3mo"},
-            {"6 Months", "6mo"},
-            {"1 Year", "1y"},
-            {"2 Years", "2y"},
-            {"5 Years", "5y"},
-            {"10 Years", "10y"},
-            {"Year To Date", "ytd"},
-            {"All", "max"},
-        };
-
         // Use this for initialization
         void Start()
         {
-            // Retrieve Data Source Names & Populate Dropdown UI 
-            DataSourceNames = GetDataSourceNames();
-            DataSourceDropDown.AddOptions(DataSourceNames);
-            
-            // Retrieve Stock Time Options & Populate Dropdown UI 
-            StockTimeOptions = GetStockTimeOptions();
-            Stock_Time_Interval_DropDown.AddOptions(StockTimeOptions);
-            
-                
             DataAttributesNames = GetAttributesList();
             PopulateAttributeDropdowns();
             SetInitialDropDownValues();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
-
-        private List<string> GetDataSourceNames()
-        {
-            return new List<string> {
-                "msft_1y.csv",
-                "cereal.csv"
-            };
-        }
-
-        private List<string> GetStockTimeOptions()
-        {
-            return stockOptionsDictionary.Keys.ToList();
         }
 
         private List<string> GetAttributesList()
@@ -113,7 +56,7 @@ namespace IATK
             return dimensions;
         }
 
-        private void PopulateAttributeDropdowns()
+        public void PopulateAttributeDropdowns()
         {
             X_AxisDropDown.AddOptions(DataAttributesNames);
             Y_AxisDropDown.AddOptions(DataAttributesNames);
@@ -121,12 +64,11 @@ namespace IATK
             SizeAttributeDropDown.AddOptions(DataAttributesNames);
         }
 
-        private void SetInitialDropDownValues()
+        public void SetInitialDropDownValues()
         {
             X_AxisDropDown.value = DataAttributesNames.IndexOf(visualisation.xDimension.Attribute);
             Y_AxisDropDown.value = DataAttributesNames.IndexOf(visualisation.yDimension.Attribute);
             Z_AxisDropDown.value = DataAttributesNames.IndexOf(visualisation.zDimension.Attribute);
-
             SizeAttributeDropDown.value = DataAttributesNames.IndexOf(visualisation.sizeDimension);
 
         }
@@ -229,46 +171,6 @@ namespace IATK
             {
                 visualisation.zDimension.maxFilter = Z_Axis_SliderMaxFilter.value;
                 visualisation.updateProperties();
-            }
-        }
-
-        public void ReadStockOptions()
-        {
-            if (visualisation != null)
-            {
-                int index = Stock_Time_Interval_DropDown.value;
-                string chosenTime = stockOptionsDictionary.ElementAt(index).Value;                
-                Debug.Log(String.Format("Stock Code: {0} | Stock Time Option: {1}", Stock_Code_Option.text, chosenTime));
-                
-                // Run the Download Python Script
-                string pythonScriptPath = "Assets/IATK/Scripts/Controller/script.py";
-                string pythonArgs = $"{Stock_Code_Option.text} {chosenTime}";
-                RunPythonScript(pythonScriptPath, pythonArgs);
-            }
-        }
-
-        public void RunPythonScript(string scriptPath, string arguments)
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = "python";
-            start.Arguments = $"{scriptPath} {arguments}";
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            start.RedirectStandardError = true;
-            start.CreateNoWindow = true;
-
-            using (Process process = Process.Start(start))
-            {
-                using (System.IO.StreamReader reader = process.StandardOutput)
-                {
-                    string result = reader.ReadToEnd();
-                    Debug.Log(result);
-                }
-                string error = process.StandardError.ReadToEnd();
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Debug.LogError(error);
-                }
             }
         }
     }
