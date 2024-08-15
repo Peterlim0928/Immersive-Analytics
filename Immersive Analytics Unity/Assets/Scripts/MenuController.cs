@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class MenuController : MonoBehaviour
 {
@@ -45,10 +46,10 @@ public class MenuController : MonoBehaviour
 
             foreach (GameObject moveableObject in moveableObjects)
             {
-                var grabInteractable = moveableObject.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+                var grabInteractable = moveableObject.GetComponent<XRGrabInteractable>();
                 if (grabInteractable == null)
                 {
-                    grabInteractable = moveableObject.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+                    grabInteractable = moveableObject.AddComponent<XRGrabInteractable>();
                 }
                 grabInteractable.throwOnDetach = false;
             }
@@ -60,7 +61,7 @@ public class MenuController : MonoBehaviour
 
             foreach (GameObject moveableObject in moveableObjects)
             {
-                var grabInteractable = moveableObject.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+                var grabInteractable = moveableObject.GetComponent<XRGrabInteractable>();
                 Destroy(grabInteractable);
             }
         }

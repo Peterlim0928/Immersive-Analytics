@@ -103,7 +103,7 @@ namespace IATK
         public int fontAxesSize = 500;
 
         [Tooltip("The type of the visualisation you want to display")]
-        public AbstractVisualisation.VisualisationTypes visualisationType;// = AbstractViualisation.VisualisationTypes.SIMPLE_VISUALISATION;
+        public AbstractVisualisation.VisualisationTypes visualisationType;// = AbstractVisualisation.VisualisationTypes.SIMPLE_VISUALISATION;
 
         [Tooltip("The color palette for discrete variables mapping")]
         public Color[] coloursPalette;

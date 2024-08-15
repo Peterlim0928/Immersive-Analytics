@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IATK;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 public class VisualisationManager : MonoBehaviour
@@ -21,7 +19,7 @@ public class VisualisationManager : MonoBehaviour
     // Visualisation object
     private CSVDataSource _dataSource;
     private Visualisation _visualisation;
-    private GameObject _vrMenu;
+    private GameObject _vrMenu; // This is game object not component
 
     private string[] _stockTimeOptionList =
     {
@@ -111,21 +109,41 @@ public class VisualisationManager : MonoBehaviour
             }
         }
         
-        // Re-create graph
+        // Re-create all the game objects
+        // IATK Visualisation
         GameObject visualisation = new GameObject("IATK Visualisation");
-        visualisation.AddComponent<Visualisation>();
+        visualisation.tag = "Moveable";
         visualisation.transform.SetParent(transform);
-        
         visualisation.transform.rotation = transform.rotation;
         visualisation.transform.localPosition = new Vector3(-0.05f, -0.12f, 0f);
         
+        // Add Components to IATK Visualisation
+        BoxCollider visualisationBoxCollider = visualisation.AddComponent<BoxCollider>();
+        visualisationBoxCollider.size = new Vector3(0.05f, 0.05f, 0.05f);
+        Rigidbody visualisationRigidbody = visualisation.AddComponent<Rigidbody>();
+        visualisationRigidbody.useGravity = false; // Disable gravity
+        visualisationRigidbody.isKinematic = true; // Prevents movement caused by physics
+        visualisation.AddComponent<Visualisation>();
+        
+        // Get the script of the component
         _visualisation = visualisation.GetComponent<Visualisation>();
         _visualisation.dataSource = _dataSource;
         _visualisation.geometry = AbstractVisualisation.GeometryType.Points;
 
+        // VR Menu
         _vrMenu = Instantiate(vrMenuPrefab, transform);
+        _vrMenu.tag = "Moveable";
         _vrMenu.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         _vrMenu.transform.localPosition = new Vector3(-0.5f, 0.4f, 0f);
+        
+        // Add Components to VR Menu
+        BoxCollider vrMenuBoxCollider = _vrMenu.AddComponent<BoxCollider>();
+        vrMenuBoxCollider.size = new Vector3(1f, 2f, 0.01f);
+        Rigidbody vrMenuRigidbody = _vrMenu.AddComponent<Rigidbody>();
+        vrMenuRigidbody.useGravity = false; // Disable gravity
+        vrMenuRigidbody.isKinematic = true; // Prevents movement caused by physics
+        
+        // Get the script of the component
         _vrMenu.GetComponent<VRMenuInteractor>().visualisation = _visualisation;
     }
 }
