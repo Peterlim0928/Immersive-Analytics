@@ -336,7 +336,7 @@ namespace IATK
                         float bmds = (int)(System.Enum.Parse(typeof(UnityEngine.Rendering.BlendMode), visualisationReference.blendingModeDestination));
                         for (int i = 0; i < viewList.Count; i++)
                         {
-                            viewList[i].SetBlendindDestinationMode(bmds);
+                            viewList[i].SetBlendingDestinationMode(bmds);
                         }
 
                         break;

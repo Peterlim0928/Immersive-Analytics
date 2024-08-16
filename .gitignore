@@ -1,5 +1,11 @@
+# Ignore all .vscode settings
+Immersive Analytics Unity/.vscode/
 
-Immersive Analytics Unity/Logs/Packages-Update.log
-Immersive Analytics Unity/.vscode/extensions.json
-/Immersive Analytics Unity/.vscode
-Immersive Analytics Unity/.vscode/settings.json
+# Ignore all .idea settings
+Immersive Analytics Unity/.idea/
+
+# Ignore all log files in Unity
+Immersive Analytics Unity/Logs/
+
+# Ignore all generated stock dataset
+Immersive Analytics Unity/Assets/IATK/Datasets/[A-Z][A-Z][A-Z][A-Z]*.csv

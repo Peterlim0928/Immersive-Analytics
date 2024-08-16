@@ -128,7 +128,7 @@ public class VisualisationManager : MonoBehaviour
         // Get the script of the component
         _visualisation = visualisation.GetComponent<Visualisation>();
         _visualisation.dataSource = _dataSource;
-        _visualisation.geometry = AbstractVisualisation.GeometryType.Points;
+        _visualisation.geometry = AbstractVisualisation.GeometryType.Spheres;
 
         // VR Menu
         _vrMenu = Instantiate(vrMenuPrefab, transform);

@@ -245,7 +245,7 @@ namespace IATK
             bigMesh.SharedMaterial.SetFloat("_MaxZ", maxz);
         }
 
-        public void SetBlendindDestinationMode(float bds)
+        public void SetBlendingDestinationMode(float bds)
         {
             bigMesh.SharedMaterial.SetFloat("_MyDstMode", bds);
         }
@@ -288,7 +288,7 @@ namespace IATK
         /// <summary>
         /// Updates vertices positions on Z
         /// </summary>
-        /// <param name="dataY"></param>
+        /// <param name="dataZ"></param>
         public void UpdateZPositions(float[] dataZ)
         {
             bigMesh.updateZPositions(dataZ);
@@ -338,16 +338,16 @@ namespace IATK
         /// <summary>
         /// sets data width for brushing textures
         /// </summary>
-        /// <param name="texSize"></param>
+        /// <param name="width"></param>
         public void SetDataWidthBrushingTexture(float width)
         {
             bigMesh.SharedMaterial.SetFloat("_DataWidth", width);
         }
 
         /// <summary>
-        /// sets data width for brushing textures
+        /// sets data height for brushing textures
         /// </summary>
-        /// <param name="texSize"></param>
+        /// <param name="height"></param>
         public void SetDataHeightBrushingTexture(float height)
         {
             bigMesh.SharedMaterial.SetFloat("_DataWidth", height);
