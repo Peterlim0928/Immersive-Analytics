@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -679,7 +680,7 @@ namespace IATK
         /// <param name="indices">Indices.</param>
         /// <param name="colours">Colours.</param>
         /// <param name="normals">Normals.</param>
-        /// <param name="MeshTopology">Mesh topology.</param>
+        /// <param name="meshTopology">Mesh topology.</param>
         /// <param name="material">Material.</param>
         private static GameObject createMesh(Vector3[] vertices, int[] indices, Color[] colours, Vector3[] normals, Vector3[] uvs, MeshTopology meshTopology, Material material)
         {
