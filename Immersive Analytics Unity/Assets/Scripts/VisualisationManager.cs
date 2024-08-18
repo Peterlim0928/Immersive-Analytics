@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using IATK;
 using TMPro;
 using UnityEngine;
@@ -21,30 +22,75 @@ public class VisualisationManager : MonoBehaviour
     private Visualisation _visualisation;
     private GameObject _vrMenu; // This is game object not component
 
+    //Real-Time Variables
+    private string _stockCode;
+    private string _stockTimeOption;
+    private static Timer _realTimeTimer;
+    public TMP_Dropdown stockRealTimeIntervalDropdown;
+
     private string[] _stockTimeOptionList =
     {
         "1 Day", "5 Days", "1 Month", "3 Months", "6 Months", "1 Year", "2 Years", "5 Years", "10 Years",
         "Year To Date", "All"
     };
     private string[] _stockTimeList = { "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max" };
+    
+    private string[] _realTimeUpdateIntervalOptions =
+    {
+        "15 secs", "30 secs", "1 min", "5 mins", "15 mins", "30 mins", "1 hour", "3 hour", "5 hours"
+    };
+
+    private int[] _realTimeUpdateIntervalInMS =
+    {
+        15000, 30000, 60000, 300000, 900000, 1800000, 3600000, 10800000, 18000000
+    };
 
     void Start()
     {
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
+        stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
     }
     
     public void ReadStockOptions()
     { 
         int index = stockTimeDropdown.value; 
-        string chosenTime = _stockTimeList[index];                
+        string chosenTime = _stockTimeList[index];
         Debug.Log(String.Format("Stock Code: {0} | Stock Time Option: {1}", stockCodeInputField.text, chosenTime));
                 
         // Run the Download Python Script
         string pythonScriptPath = "Assets/IATK/Scripts/Controller/script.py";
         string pythonArgs = $"{stockCodeInputField.text} {chosenTime}";
+        
+        //Adjust variable for Real-Time update
+        _stockCode = stockCodeInputField.text;
+        _stockTimeOption = chosenTime;
+        
         RunPythonScript(pythonScriptPath, pythonArgs);
-                
+        
         UpdateGraph();
+        UpdateGraphRealTime();
+    }
+    
+    private void UpdateGraphRealTimeHelper(System.Object source, ElapsedEventArgs e)
+    {
+        Debug.Log(String.Format("(Real Time Update) Stock Code: {0} | Stock Time Option: {1}", _stockCode, _stockTimeOption));
+        
+        // Run the Download Python Script
+        string pythonScriptPath = "Assets/IATK/Scripts/Controller/script.py";
+        string pythonArgs = $"{_stockCode} {_stockTimeOption}";
+        RunPythonScript(pythonScriptPath, pythonArgs);
+        
+        UpdateGraph();
+    }
+    
+    private void UpdateGraphRealTime()
+    {
+        int index = stockRealTimeIntervalDropdown.value; 
+        int interval = _realTimeUpdateIntervalInMS[index];
+        _realTimeTimer = new Timer(interval); // Set the timer interval to 1 second (1000 milliseconds)
+        _realTimeTimer.Elapsed += UpdateGraphRealTimeHelper;
+        _realTimeTimer.AutoReset = true; // Restart the timer automatically after each elapsed event
+        _realTimeTimer.Enabled = true; // Start the timer
     }
 
     public void RunPythonScript(string scriptPath, string arguments)
@@ -74,6 +120,9 @@ public class VisualisationManager : MonoBehaviour
 
     public void UpdateGraph()
     {
+        //Added for debug
+        Debug.Log("Graph Updating");
+        
         // Delete Everything
         Transform currentVisualisation = transform.Find("IATK Visualisation");
         if (currentVisualisation != null)
