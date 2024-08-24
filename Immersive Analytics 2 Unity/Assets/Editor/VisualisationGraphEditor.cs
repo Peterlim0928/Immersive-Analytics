@@ -8,11 +8,15 @@ public class VisualisationGraphEditor : Editor
 {
     private VisualisationGraph _visualisationGraph;
     private SerializedProperty _dataSourceProperty;
+    private SerializedProperty _datapointMaterialProperty;
+    private SerializedProperty _highlightedDatapointMaterialProperty;
 
     private void OnEnable()
     {
         _visualisationGraph = (VisualisationGraph)target;
         _dataSourceProperty = serializedObject.FindProperty("dataSource");
+        _datapointMaterialProperty = serializedObject.FindProperty("datapointMaterial");
+        _highlightedDatapointMaterialProperty = serializedObject.FindProperty("highlightedDatapointMaterial");
     }
 
     public override void OnInspectorGUI()
@@ -21,6 +25,8 @@ public class VisualisationGraphEditor : Editor
 
         // Display the DataSource field
         EditorGUILayout.PropertyField(_dataSourceProperty);
+        EditorGUILayout.PropertyField(_datapointMaterialProperty);
+        EditorGUILayout.PropertyField(_highlightedDatapointMaterialProperty);
 
         if (_visualisationGraph.dataSource != null && _visualisationGraph.dataSource.data != null)
         {

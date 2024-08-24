@@ -2,11 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class VisualisationGraph : MonoBehaviour
 {
     [Tooltip("The data source of this graph")]
     public DataSource dataSource; // The actual variable that stores the data
+    
+    [Tooltip("The material of the data points")]
+    public Material datapointMaterial; // The material of the data points
+    
+    [Tooltip("The material of the data points when highlighted")]
+    public Material highlightedDatapointMaterial; // The material of the data point when highlighted
+    
     
     // Indexes for dropdown selections
     public int xAxisIndex;
@@ -132,6 +140,12 @@ public class VisualisationGraph : MonoBehaviour
                 sphere.transform.SetParent(dataPointsParent);
                 sphere.transform.localPosition = new Vector3(xValue, yValue, zValue);
                 sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+                
+                // Set the material of the sphere
+                sphere.GetComponent<Renderer>().material = datapointMaterial;
+                sphere.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedDatapointMaterial;
+                sphere.AddComponent<XRGrabInteractable>();
+                sphere.GetComponent<Rigidbody>().useGravity = false;
             }
         }
     }
