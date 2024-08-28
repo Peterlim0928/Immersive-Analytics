@@ -146,6 +146,7 @@ public class VisualisationGraph : MonoBehaviour
                 sphere.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedDatapointMaterial;
                 sphere.AddComponent<XRGrabInteractable>();
                 sphere.GetComponent<Rigidbody>().useGravity = false;
+                sphere.GetComponent<Rigidbody>().isKinematic = true;
             }
         }
     }
