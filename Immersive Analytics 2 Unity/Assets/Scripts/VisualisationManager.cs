@@ -21,8 +21,12 @@ public class VisualisationManager : MonoBehaviour
     // Real-Time Variables
     private string _stockCode;
     private string _stockTimeOption;
+    private string _stockTimeInterval;
+    private int _stockTimePeriod;
     private static Timer _realTimeTimer;
     public TMP_Dropdown stockRealTimeIntervalDropdown;
+    
+    public TMP_Dropdown stockTimeIntervalDropdown;
 
     private readonly string[] _stockTimeOptionList =
     {
@@ -40,25 +44,38 @@ public class VisualisationManager : MonoBehaviour
     {
         15000, 30000, 60000, 300000, 900000, 1800000, 3600000, 10800000, 18000000
     };
+    
+    private readonly string[] _stockTimeIntervalOptionsList =
+    {
+        "1 min", "2 mins", "5 mins", "15 mins", "30 mins", "60 mins", "1 hour", "1.5 hour", "1 day", "5 days", "1 week", "1 month", "3 months"
+    };
+    
+    private readonly string[] _stockTimeIntervalOptions =
+    {
+        "1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d", "5d", "1wk", "1mo", "3mo"
+    };
 
     void Start()
     {
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
         stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
+        stockTimeIntervalDropdown.AddOptions(_stockTimeIntervalOptionsList.ToList());
     }
     
     public void ReadStockOptions()
     { 
-        int index = stockTimeDropdown.value; 
-        string chosenTime = _stockTimeList[index];
-        Debug.Log($"Stock Code: {stockCodeInputField.text} | Stock Time Option: {chosenTime}");
+        _stockTimePeriod = stockTimeDropdown.value; 
+        string chosenTime = _stockTimeList[_stockTimePeriod];
+        _stockTimeInterval = _stockTimeIntervalOptions[stockTimeIntervalDropdown.value];
+        Debug.Log($"Stock Code: {stockCodeInputField.text} | Stock Time Period Option: {_stockTimeOption} | Stock Time Interval: {_stockTimeInterval}");
                 
         // Run the Download Python Script
         string pythonScriptPath = ScriptPath;
-        string pythonArgs = $"{stockCodeInputField.text} {chosenTime}";
+        string pythonArgs = $"{stockCodeInputField.text} {chosenTime} {_stockTimeInterval}";
         
         //Adjust variable for Real-Time update
-        _stockCode = stockCodeInputField.text;
+        _stockCode = stockCodeInputField.text.ToUpper();
+        Debug.Log(_stockCode);
         _stockTimeOption = chosenTime;
         
         RunPythonScript(pythonScriptPath, pythonArgs);
@@ -69,14 +86,15 @@ public class VisualisationManager : MonoBehaviour
     
     private void UpdateGraphRealTimeHelper(System.Object source, ElapsedEventArgs e)
     {
-        Debug.Log($"(Real Time Update) Stock Code: {_stockCode} | Stock Time Option: {_stockTimeOption}");
+        Debug.Log($"(Real Time Update) Stock Code: {_stockCode} | Stock Time Period Option: {_stockTimeOption} | Stock Time Interval: {_stockTimeInterval}");
         
         // Run the Download Python Script
         string pythonScriptPath = ScriptPath;
-        string pythonArgs = $"{_stockCode} {_stockTimeOption}";
+        string pythonArgs = $"{_stockCode} {_stockTimeOption} {_stockTimeInterval}";
         RunPythonScript(pythonScriptPath, pythonArgs);
         
-        UpdateGraph();
+        UpdateGraphForRealTime("notUsed");
+        Debug.Log("After Calling");
     }
     
     private void UpdateGraphRealTime()
@@ -105,6 +123,7 @@ public class VisualisationManager : MonoBehaviour
             {
                 string result = reader.ReadToEnd();
                 Debug.Log(result);
+                Debug.Log("Run Python Script");
             }
             string error = process.StandardError.ReadToEnd();
             if (!string.IsNullOrEmpty(error))
@@ -131,6 +150,8 @@ public class VisualisationManager : MonoBehaviour
                 currentDataSource.data = csvFile;
                 currentDataSource.ParseCsv();
                 
+                transform.Find("VisualisationGraph").GetComponent<VisualisationGraph>().UpdateGraph();
+                
                 // Update the dropdown options on the menu
                 GameObject vrMenu = transform.Find("VRMenu").gameObject;
                 vrMenu.GetComponent<VRMenuInteractor>().UpdateDropdown();
@@ -139,6 +160,39 @@ public class VisualisationManager : MonoBehaviour
             {
                 Debug.LogError("CSV file not found in Resources folder.");
             }
+        }
+    }
+    
+    private void UpdateGraphForRealTime(string notUsed)
+    {
+        Debug.Log("Starting Update Graph");
+        // Load CSV file and update data source
+        string fileName = _stockCode+ "-" + _stockTimeList[_stockTimePeriod] + ".csv";
+        string filePath = Path.Combine(DataPath, fileName);
+        
+        Debug.Log("After File Path");
+        
+        TextAsset csvFile = new TextAsset(File.ReadAllText(filePath));
+
+        Debug.Log("Updating Real Time");
+        
+        if (csvFile != null)
+        {
+            Debug.Log("Updating Real Time Inner");
+            // Assign the CSV file content to the Data field of CSVDataSource
+            DataSource currentDataSource = transform.Find("DataSource").GetComponent<DataSource>();
+            currentDataSource.data = csvFile;
+            currentDataSource.ParseCsv();
+            
+            transform.Find("VisualisationGraph").GetComponent<VisualisationGraph>().UpdateGraph();
+            
+            // Update the dropdown options on the menu
+            GameObject vrMenu = transform.Find("VRMenu").gameObject;
+            vrMenu.GetComponent<VRMenuInteractor>().UpdateDropdown();
+        }
+        else
+        {
+            Debug.LogError("CSV file not found in Resources folder.");
         }
     }
 }
