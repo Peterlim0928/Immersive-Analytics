@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Timers;
+using System.Threading.Tasks;
 using IATK;
 using TMPro;
 using UnityEngine;
@@ -23,7 +23,6 @@ public class VisualisationManager : MonoBehaviour
     private string _stockTimeOption;
     private string _stockTimeInterval;
     private int _stockTimePeriod;
-    private static Timer _realTimeTimer;
     public TMP_Dropdown stockRealTimeIntervalDropdown;
     
     public TMP_Dropdown stockTimeIntervalDropdown;
@@ -84,7 +83,7 @@ public class VisualisationManager : MonoBehaviour
         UpdateGraphRealTime();
     }
     
-    private void UpdateGraphRealTimeHelper(System.Object source, ElapsedEventArgs e)
+    private void UpdateGraphRealTimeHelper()
     {
         Debug.Log($"(Real Time Update) Stock Code: {_stockCode} | Stock Time Period Option: {_stockTimeOption} | Stock Time Interval: {_stockTimeInterval}");
         
@@ -93,18 +92,22 @@ public class VisualisationManager : MonoBehaviour
         string pythonArgs = $"{_stockCode} {_stockTimeOption} {_stockTimeInterval}";
         RunPythonScript(pythonScriptPath, pythonArgs);
         
-        UpdateGraphForRealTime("notUsed");
+        UpdateGraphForRealTime();
         Debug.Log("After Calling");
     }
     
-    private void UpdateGraphRealTime()
+    private async void UpdateGraphRealTime()
     {
         int index = stockRealTimeIntervalDropdown.value; 
         int interval = _realTimeUpdateIntervalInMS[index];
-        _realTimeTimer = new Timer(interval); // Set the timer interval to 1 second (1000 milliseconds)
-        _realTimeTimer.Elapsed += UpdateGraphRealTimeHelper;
-        _realTimeTimer.AutoReset = true; // Restart the timer automatically after each elapsed event
-        _realTimeTimer.Enabled = true; // Start the timer
+        while (true)
+        {
+            for (int i = 0; i < interval; i++) // Adjust the loop limit as needed
+            {
+                await Task.Delay(1);
+            }
+            UpdateGraphRealTimeHelper();
+        }
     }
 
     public void RunPythonScript(string scriptPath, string arguments)
@@ -163,7 +166,7 @@ public class VisualisationManager : MonoBehaviour
         }
     }
     
-    private void UpdateGraphForRealTime(string notUsed)
+    private void UpdateGraphForRealTime()
     {
         Debug.Log("Starting Update Graph");
         // Load CSV file and update data source
