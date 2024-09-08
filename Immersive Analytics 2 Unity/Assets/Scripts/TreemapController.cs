@@ -1,20 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using Debug = UnityEngine.Debug;
 
 public class TreemapController : MonoBehaviour
 {
-    public TextAsset data;
     private List<TreemapData> _parsedData;
     private Treemap _treemap;
     private GameObject _parent;
     
     private double _canvasWidth;
     private double _canvasHeight;
+    
+    private const string TreeDataScriptPath = "./Assets/Scripts/script_tree_map.py";
     
     // Start is called before the first frame update
     void Start()
@@ -23,54 +29,76 @@ public class TreemapController : MonoBehaviour
         RectTransform treemapTransform = _parent.GetComponent<RectTransform>();
         _canvasWidth = treemapTransform.rect.width;
         _canvasHeight = treemapTransform.rect.height;
+
+        _parsedData = new List<TreemapData>();
+        RunPythonScript();
+
+        // TODO: Hardcode render semiconductor, remove after fix onClick event
+        _parsedData = _parsedData[0].child;
         
-        ParseCsv();
         _treemap = new Treemap(_parsedData, _canvasWidth, _canvasHeight);
-        
-        List<RectangleData> processedData = _treemap.GetRectangleData();
-        RenderData(processedData);
+        RenderData(_treemap.GetRectangleData());
     }
     
-    private void ParseCsv()
+    private void RunPythonScript()
     {
-        if (data == null)
-            return;
-        
-        // Clear any previously parsed data
-        _parsedData = new List<TreemapData>();
+        ProcessStartInfo start = new ProcessStartInfo();
+        start.FileName = "python";
+        start.Arguments = $"{TreeDataScriptPath}";
+        start.UseShellExecute = false;
+        start.RedirectStandardOutput = true;
+        start.RedirectStandardError = true;
+        start.CreateNoWindow = true;
 
-        // Read the CSV file line by line
-        StringReader reader = new StringReader(data.text);
-        
-        // Read header and store as key
-        string[] headers = reader.ReadLine()?.Split(',');
-        if (headers == null)
+        using (Process process = Process.Start(start))
         {
-            Debug.LogWarning("CSV File is empty");
-            return;
-        }
-
-        // Read the rest of the file and store as value (List)
-        string line;
-        while ((line = reader.ReadLine()) != null)
-        {
-            string[] values = line.Split(',');
-            TreemapData currentData = new TreemapData();
-            
-            for (int i = 0; i < headers.Length; i++)
+            using (StreamReader reader = process.StandardOutput)
             {
-                switch (i)
+                string result = reader.ReadToEnd();
+                var treemapDataDict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(result);
+                
+                // For each industry
+                foreach (KeyValuePair<string, Dictionary<string, double>> outerTreeData in treemapDataDict)
                 {
-                    case 0: // Stock Code
-                        currentData.stockCode = values[i];
-                        break;
-                    case 1: // Data
-                        currentData.data = double.Parse(values[i]);
-                        break;
+                    List<TreemapData> child = new List<TreemapData>();
+                    Debug.Log(outerTreeData.Key);
+
+                    // For each company
+                    foreach (KeyValuePair<string, double> innerTreeData in outerTreeData.Value)
+                    {
+                        TreemapData fieldData = new TreemapData();
+                        Debug.Log(innerTreeData.Key);
+                        Debug.Log(innerTreeData.Value);
+
+                        double value = innerTreeData.Value;
+                        fieldData.data = Math.Abs(value);
+                        fieldData.stockCode = innerTreeData.Key;
+                        fieldData.positive = value > 0;
+                        
+                        child.Add(fieldData);
+                    }
+                    
+                    // Sort in descending order
+                    child.Sort((x, y) => y.data.CompareTo(x.data));
+
+                    TreemapData parent = new TreemapData();
+
+                    parent.child = child;
+                    parent.data = 1; // TODO: Un-hardcode
+                    parent.stockCode = outerTreeData.Key;
+                    parent.positive = true; // TODO: Un-hardcode
+                    
+                    _parsedData.Add(parent);
                 }
+                
+                // Sort in descending order
+                _parsedData.Sort((x, y) => y.data.CompareTo(x.data));
             }
-            
-            _parsedData.Add(currentData);
+            string error = process.StandardError.ReadToEnd();
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(error);
+            }
         }
     }
 
@@ -83,6 +111,8 @@ public class TreemapController : MonoBehaviour
         // Find the min and max data for scaling
         double minData = renderDataList.Min(e => e.data.normalisedData);
         double maxData = renderDataList.Max(e => e.data.normalisedData);
+        Debug.Log(maxData);
+        Debug.Log(minData);
         
         // For each rectangle data
         foreach (var renderData in renderDataList)
@@ -93,7 +123,15 @@ public class TreemapController : MonoBehaviour
             
             // Adjust scale (set size)
             float xScale = (float)(renderData.width * _canvasWidth);
-            float yScale = (float)((renderData.data.normalisedData - minData) / (maxData - minData) * heightRange + minHeight); // [1, 50]
+            float yScale;
+            if (maxData - minData < 0.0001)
+            {
+                yScale = 1;
+            }
+            else
+            {
+                yScale = (float)((renderData.data.normalisedData - minData) / (maxData - minData) * heightRange + minHeight); // [1, 50]
+            }
             float zScale = (float)(renderData.height * _canvasHeight);
             cube.transform.localScale = new Vector3(xScale, yScale, zScale); // Scale along the y-axis for 3D effect
             
@@ -119,7 +157,7 @@ public class TreemapController : MonoBehaviour
             
             // Add relevant components
             cube.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedMaterial;
-            cube.AddComponent<XRGrabInteractable>();
+            XRGrabInteractable interactable = cube.AddComponent<XRGrabInteractable>();
             cube.GetComponent<Rigidbody>().useGravity = false;
             cube.GetComponent<Rigidbody>().isKinematic = true;
             
@@ -140,15 +178,31 @@ public class TreemapController : MonoBehaviour
             textObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
 
             // TODO: Add OnClick events
-            // var clickable = cube.AddComponent<Clickable>();
-            // clickable.onClick = () => OnRectangleClicked(renderData);
+            // interactable.selectEntered = new SelectEnterEvent();
+            // interactable.selectEntered.AddListener(_ => CubeOnPressed(renderData));
+        }
+    }
+
+    public void CubeOnPressed(RectangleData renderData)
+    {
+        Debug.Log("Test");
+        if (renderData.data.child != null)
+        {
+            _treemap = new Treemap(renderData.data.child, _canvasWidth, _canvasHeight);
+            RenderData(_treemap.GetRectangleData());
+        }
+        else
+        {
+            Debug.Log("No child data to render");
         }
     }
 }
 
 public class TreemapData
 {
+    public List<TreemapData> child { get; set; }
     public string stockCode { get; set; }
     public double data { get; set; }
+    public bool positive { get; set; }
     public double normalisedData { get; set; }
 }
