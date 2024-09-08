@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using UnityEngine;
 
 /// <summary>
@@ -18,8 +17,8 @@ public class Treemap
     
     private List<RectangleData> _rectangles;   // The list of rectangles to be rendered
     
-    private readonly Color _startColor = Color.yellow;   // The starting color for the gradient
-    private readonly Color _endColor = Color.red;        // The ending color for the gradient
+    private readonly Color _positiveColor = Color.green;   // The starting color for the gradient
+    private readonly Color _negativeColor = Color.red;        // The ending color for the gradient
     
     /// <summary>
     /// Initializes a new instance of the Treemap class and updates the data.
@@ -202,11 +201,12 @@ public class Treemap
     /// <returns>The color of the rectangle based on its data.</returns>
     private Color CalculateColor(TreemapData data)
     {
-        double normalizedArea = (data.normalisedData - _minArea) / (_maxArea - _minArea);
+        double normalisedArea = (data.normalisedData - _minArea) / (_maxArea - _minArea);
+        Color chosenColor = data.positive ? _positiveColor : _negativeColor;
 
-        float r = (float)(_startColor.r + normalizedArea * (_endColor.r - _startColor.r));
-        float g = (float)(_startColor.g + normalizedArea * (_endColor.g - _startColor.g));
-        float b = (float)(_startColor.b + normalizedArea * (_endColor.b - _startColor.b));
+        float r = (float)(chosenColor.r * (0.5 + 0.5 * normalisedArea));
+        float g = (float)(chosenColor.g * (0.5 + 0.5 * normalisedArea));
+        float b = (float)(chosenColor.b * (0.5 + 0.5 * normalisedArea));
         
         return new Color(r, g, b);
     }
