@@ -1,4 +1,6 @@
 import yfinance as yf
+import pandas as pd
+import random
 
 def main():
     """
@@ -11,13 +13,15 @@ def main():
      - Change in Closing Price compared to previous day (in %)
     """
 
-    stock_codes = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA",
-                   "META", "NVDA", "JNJ", "V", "JPM",
-                   "PG", "AMD", "MA", "WDC", "DIS",
-                   "PYPL", "NFLX", "PEP", "KO", "INTC"]
+    # Randomly select 20 stock codes
+    num_of_stocks = 20
+    stock_codes_csv = pd.read_csv("Immersive Analytics 2 Unity\Assets\Scripts\companies.csv")
+    stock_codes = stock_codes_csv["Symbol"].tolist()
+    selected_stock_codes = random.sample(stock_codes, num_of_stocks)
+
     output_dict = {}
 
-    for stock_code in stock_codes:
+    for stock_code in selected_stock_codes:
         stock_code = stock_code.upper()
         stock_data = yf.Ticker(stock_code)
 
