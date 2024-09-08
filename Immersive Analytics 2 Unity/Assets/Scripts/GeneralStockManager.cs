@@ -16,19 +16,40 @@ public class GeneralStockManager : MonoBehaviour
     public GameObject StockItemPrefab;
     public Transform GeneralStockContent;
 
+    public GameObject WatchlistItemPrefab;
+    public Transform WatchlistContent;
+
     [System.Serializable]
-    public class GeneralStockData
+    public class StockDataBase
     {
         public string stockSymbol;
         public string stockName;
         public double stockPrice;
-        public double stockChange;
         public double stockChangePercentage;
+
     }
 
-    public List<GeneralStockData> generalStockData = new List<GeneralStockData>();
+    [System.Serializable]
+    public class GeneralStockData : StockDataBase
+    {
+        public double stockChange;
+    }
+
+    [System.Serializable]
+    public class WatchlistStockData : StockDataBase
+    {
+    }
+
+    // Correct the list declarations
+    public List<StockDataBase> generalStockData = new List<StockDataBase>();
+    private List<StockDataBase> watchlistData = new List<StockDataBase>();
+
 
     private const string GeneralStockDataScriptPath = "./Assets/Scripts/general_stock_data_script.py";
+
+    // Sprites for heart icons
+    public Sprite emptyHeartSprite;
+    public Sprite fullHeartSprite;
 
     // Start is called before the first frame update
     void Start()
@@ -51,8 +72,10 @@ public class GeneralStockManager : MonoBehaviour
         }
 
 
-        foreach (GeneralStockData stockData in generalStockData)
+        foreach (StockDataBase stockData in generalStockData)
         {
+            GeneralStockData castedStockData = (GeneralStockData)stockData;
+
             GameObject newStock = Instantiate(StockItemPrefab, GeneralStockContent);
 
             TextMeshProUGUI stockSymbol = newStock.transform.Find("StockSymbol").GetComponent<TextMeshProUGUI>();
@@ -62,14 +85,51 @@ public class GeneralStockManager : MonoBehaviour
             TextMeshProUGUI stockChangePercentage = newStock.transform.Find("StockChangePercentage").GetComponent<TextMeshProUGUI>();
 
             // Set The Values
-            stockSymbol.text = stockData.stockSymbol;
-            stockName.text = stockData.stockName;
-            stockPrice.text = stockData.stockPrice.ToString();
-            stockChange.text = stockData.stockChange.ToString();
-            stockChangePercentage.text = stockData.stockChangePercentage.ToString();
+            stockSymbol.text = castedStockData.stockSymbol;
+            stockName.text = castedStockData.stockName;
+            stockPrice.text = castedStockData.stockPrice.ToString();
+            stockChange.text = castedStockData.stockChange.ToString();
+            stockChangePercentage.text = castedStockData.stockChangePercentage.ToString();
 
-            // Debug.Log($"Populated stock item: {stockData.stockSymbol}");
+            // Find the AddToWatchlist Button
+            Button addToWatchlistButton = newStock.transform.Find("AddWatchlistButton").GetComponent<Button>();
+            Image buttonImage = addToWatchlistButton.GetComponent<Image>();
 
+            addToWatchlistButton.onClick.AddListener(() => MainWatchlistButtonHandler(castedStockData, buttonImage));
+
+
+        }
+    }
+
+    public void PopulateWatchlistDataUI()
+    {
+        foreach (Transform child in WatchlistContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (StockDataBase stockData in watchlistData)
+        {
+            WatchlistStockData castedStockData = (WatchlistStockData)stockData;
+
+            GameObject newStock = Instantiate(WatchlistItemPrefab, WatchlistContent);
+
+            TextMeshProUGUI stockSymbol = newStock.transform.Find("StockSymbol").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI stockName = newStock.transform.Find("StockName").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI stockPrice = newStock.transform.Find("StockPrice").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI stockChangePercentage = newStock.transform.Find("StockChangePercentage").GetComponent<TextMeshProUGUI>();
+
+            // Set The Values
+            stockSymbol.text = castedStockData.stockSymbol;
+            stockName.text = castedStockData.stockName;
+            stockPrice.text = castedStockData.stockPrice.ToString();
+            stockChangePercentage.text = castedStockData.stockChangePercentage.ToString();
+
+            // Find the SubWatchlistButton Button
+            Button addToWatchlistButton = newStock.transform.Find("SubWatchlistButton").GetComponent<Button>();
+            Image buttonImage = addToWatchlistButton.GetComponent<Image>();
+
+            addToWatchlistButton.onClick.AddListener(() => SubWatchlistButtonHandler(castedStockData, buttonImage));
         }
     }
 
@@ -120,13 +180,7 @@ public class GeneralStockManager : MonoBehaviour
         RunPythonScript();
     }
 
-    private void AddGeneralStockData(
-        string newStockSymbol,
-        string newStockName,
-        double newStockPrice,
-        double newStockChange,
-        double newStockChangePercentage
-        )
+    private void AddGeneralStockData(string newStockSymbol, string newStockName, double newStockPrice, double newStockChange, double newStockChangePercentage)
     {
         GeneralStockData newStockData = new GeneralStockData
         {
@@ -138,5 +192,59 @@ public class GeneralStockManager : MonoBehaviour
         };
 
         generalStockData.Add(newStockData);
+    }
+
+    public void MainWatchlistButtonHandler(GeneralStockData stockData, Image buttonImage)
+    {
+
+        // Add to Watchlist
+        if (buttonImage.sprite == emptyHeartSprite)
+        {
+            buttonImage.sprite = fullHeartSprite;
+            AddToWatchlist(stockData);
+        }
+        // Remove from Watchlist
+        else
+        {
+            buttonImage.sprite = emptyHeartSprite;
+            RemoveFromWatchlist(stockData);
+        }
+    }
+
+    public void SubWatchlistButtonHandler(WatchlistStockData stockData, Image buttonImage)
+    {
+        // Remove from Watchlist
+        if (buttonImage.sprite == fullHeartSprite)
+        {
+            buttonImage.sprite = emptyHeartSprite;
+            RemoveFromWatchlist(stockData);
+        }
+    }
+
+    private void AddToWatchlist(GeneralStockData stockData)
+    {
+        WatchlistStockData newWatchlistData = new WatchlistStockData
+        {
+            stockSymbol = stockData.stockSymbol,
+            stockName = stockData.stockName,
+            stockPrice = stockData.stockPrice,
+            stockChangePercentage = stockData.stockChangePercentage
+        };
+
+        watchlistData.Add(newWatchlistData);
+        PopulateWatchlistDataUI();
+    }
+
+    private void RemoveFromWatchlist(StockDataBase stockData)
+    {
+        WatchlistStockData stockToRemove = (WatchlistStockData)watchlistData.Find(watchlistStock => watchlistStock.stockSymbol == stockData.stockSymbol);
+
+        if (stockToRemove != null)
+        {
+            watchlistData.Remove(stockToRemove);
+            PopulateWatchlistDataUI();
+            PopulateGeneralStockDataUI();
+        }
+
     }
 }
