@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Debug = UnityEngine.Debug;
@@ -32,9 +32,6 @@ public class TreemapController : MonoBehaviour
 
         _parsedData = new List<TreemapData>();
         RunPythonScript();
-
-        // TODO: Hardcode render semiconductor, remove after fix onClick event
-        _parsedData = _parsedData[0].child;
         
         _treemap = new Treemap(_parsedData, _canvasWidth, _canvasHeight);
         RenderData(_treemap.GetRectangleData());
@@ -61,14 +58,11 @@ public class TreemapController : MonoBehaviour
                 foreach (KeyValuePair<string, Dictionary<string, double>> outerTreeData in treemapDataDict)
                 {
                     List<TreemapData> child = new List<TreemapData>();
-                    Debug.Log(outerTreeData.Key);
 
                     // For each company
                     foreach (KeyValuePair<string, double> innerTreeData in outerTreeData.Value)
                     {
                         TreemapData fieldData = new TreemapData();
-                        Debug.Log(innerTreeData.Key);
-                        Debug.Log(innerTreeData.Value);
 
                         double value = innerTreeData.Value;
                         fieldData.data = Math.Abs(value);
@@ -111,8 +105,12 @@ public class TreemapController : MonoBehaviour
         // Find the min and max data for scaling
         double minData = renderDataList.Min(e => e.data.normalisedData);
         double maxData = renderDataList.Max(e => e.data.normalisedData);
-        Debug.Log(maxData);
-        Debug.Log(minData);
+        
+        // Delete old cubes
+        foreach (Transform cubeChild in _parent.transform)
+        {
+            Destroy(cubeChild.gameObject);
+        }
         
         // For each rectangle data
         foreach (var renderData in renderDataList)
@@ -156,36 +154,39 @@ public class TreemapController : MonoBehaviour
             highlightedMaterial.SetColor("_EmissionColor", material.color);
             
             // Add relevant components
+            XRSimpleInteractable interactable = cube.AddComponent<XRSimpleInteractable>();
             cube.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedMaterial;
-            XRGrabInteractable interactable = cube.AddComponent<XRGrabInteractable>();
-            cube.GetComponent<Rigidbody>().useGravity = false;
-            cube.GetComponent<Rigidbody>().isKinematic = true;
+            Rigidbody cubeRigidbody = cube.AddComponent<Rigidbody>();
+            cubeRigidbody.useGravity = false;
+            cubeRigidbody.isKinematic = true;
             
             // Add text on the cube
             GameObject textObject = new GameObject("CubeLabel");
             textObject.transform.SetParent(cube.transform);
         
             // Add TextMesh component for displaying text
-            TextMesh textMesh = textObject.AddComponent<TextMesh>();
-            textMesh.text = renderData.data.stockCode; // Display the data value as text
+            TextMeshPro textMesh = textObject.AddComponent<TextMeshPro>();
+            textMesh.rectTransform.sizeDelta = new Vector2(100, 20);
+            textMesh.text = $"{renderData.data.stockCode}\n{renderData.data.data}"; // Display the data value as text
             textMesh.fontSize = 72;
             textMesh.color = Color.black; // Set text color
-            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.alignment = TextAlignmentOptions.Center;
         
             // Adjust text position
-            textObject.transform.localPosition = new Vector3(0, yScale / 100 + 0.1f, 0); // Place it slightly above the cube
+            textObject.transform.localPosition = new Vector3(0, (float)(maxHeight / 100 + 0.1), 0); // Place it slightly above the cube
             textObject.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            textObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            double scaleMultiplier = xScale > zScale ? zScale / xScale : xScale / zScale;
+            double xTextScale = xScale > zScale ? scaleMultiplier : 1;
+            double yTextScale = zScale > xScale ? scaleMultiplier : 1;
+            textObject.transform.localScale = new Vector3((float)xTextScale * 0.01f, (float)yTextScale * 0.01f, 0.01f);
 
-            // TODO: Add OnClick events
-            // interactable.selectEntered = new SelectEnterEvent();
-            // interactable.selectEntered.AddListener(_ => CubeOnPressed(renderData));
+            interactable.firstSelectEntered = new SelectEnterEvent();
+            interactable.firstSelectEntered.AddListener(_ => CubeOnPressed(renderData));
         }
     }
 
     public void CubeOnPressed(RectangleData renderData)
     {
-        Debug.Log("Test");
         if (renderData.data.child != null)
         {
             _treemap = new Treemap(renderData.data.child, _canvasWidth, _canvasHeight);
@@ -195,6 +196,12 @@ public class TreemapController : MonoBehaviour
         {
             Debug.Log("No child data to render");
         }
+    }
+
+    public void ReturnToHome()
+    {
+        _treemap = new Treemap(_parsedData, _canvasWidth, _canvasHeight);
+        RenderData(_treemap.GetRectangleData());
     }
 }
 

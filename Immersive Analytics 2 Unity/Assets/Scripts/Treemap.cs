@@ -201,7 +201,11 @@ public class Treemap
     /// <returns>The color of the rectangle based on its data.</returns>
     private Color CalculateColor(TreemapData data)
     {
-        double normalisedArea = (data.normalisedData - _minArea) / (_maxArea - _minArea);
+        double normalisedArea = 1;
+        if (_maxArea - _minArea > 0.0001)
+        {
+            normalisedArea = (data.normalisedData - _minArea) / (_maxArea - _minArea);
+        }
         Color chosenColor = data.positive ? _positiveColor : _negativeColor;
 
         float r = (float)(chosenColor.r * (0.5 + 0.5 * normalisedArea));

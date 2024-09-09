@@ -107,7 +107,7 @@ public class VisualisationGraph : MonoBehaviour
             float zMin = FindMinValue(zData);
             float zMax = FindMaxValue(zData);
             
-            Debug.Log(String.Format("{0} {1} {2} {3} {4} {5}", xMin, xMax, yMin, yMax, zMin, zMax));
+            // Debug.Log(String.Format("{0} {1} {2} {3} {4} {5}", xMin, xMax, yMin, yMax, zMin, zMax));
 
             // Count number of data points
             int count;
@@ -143,10 +143,11 @@ public class VisualisationGraph : MonoBehaviour
                 
                 // Set the material of the sphere
                 sphere.GetComponent<Renderer>().material = datapointMaterial;
+                sphere.AddComponent<XRSimpleInteractable>();
                 sphere.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedDatapointMaterial;
-                sphere.AddComponent<XRGrabInteractable>();
-                sphere.GetComponent<Rigidbody>().useGravity = false;
-                sphere.GetComponent<Rigidbody>().isKinematic = true;
+                Rigidbody sphereRigidbody = sphere.AddComponent<Rigidbody>();
+                sphereRigidbody.useGravity = false;
+                sphereRigidbody.isKinematic = true;
             }
         }
     }

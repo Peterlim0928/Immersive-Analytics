@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class OnHoverEnterEffect : MonoBehaviour
 {
@@ -15,15 +12,9 @@ public class OnHoverEnterEffect : MonoBehaviour
     {
         _originalMaterial = GetComponent<Renderer>().material;
 
-        var interactable = GetComponent<XRGrabInteractable>();
+        var interactable = GetComponent<XRSimpleInteractable>();
         interactable.hoverEntered.AddListener(OnHoverEnter);
         interactable.hoverExited.AddListener(OnHoverExit);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
     
     // This method will be called when you start hovering
