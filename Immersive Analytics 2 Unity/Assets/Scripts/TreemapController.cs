@@ -131,7 +131,7 @@ public class TreemapController : MonoBehaviour
                 yScale = (float)((renderData.data.normalisedData - minData) / (maxData - minData) * heightRange + minHeight); // [1, 50]
             }
             float zScale = (float)(renderData.height * _canvasHeight);
-            cube.transform.localScale = new Vector3(xScale, yScale, zScale); // Scale along the y-axis for 3D effect
+            cube.transform.localScale = new Vector3(xScale - 1f, yScale, zScale - 1f); // Offset to give space
             
             // Adjust position (set location)
             float xPos = (float)(renderData.x * _canvasWidth - _canvasWidth / 2 + renderData.width * _canvasWidth / 2);

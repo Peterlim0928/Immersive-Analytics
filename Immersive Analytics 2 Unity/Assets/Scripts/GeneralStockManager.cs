@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -148,10 +146,10 @@ public class GeneralStockManager : MonoBehaviour
             using (StreamReader reader = process.StandardOutput)
             {
                 string result = reader.ReadToEnd();
-                Debug.Log(result);
+                // Debug.Log(result);
 
                 var stockDataDict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(result);
-                Debug.Log(stockDataDict);
+                // Debug.Log(stockDataDict);
 
                 foreach (var stock in stockDataDict)
                 {
@@ -163,7 +161,7 @@ public class GeneralStockManager : MonoBehaviour
                     double stockChange = Convert.ToDouble(stockDetails["Change Figure"]);
                     double stockChangePercentage = Convert.ToDouble(stockDetails["Change Percentage"]);
 
-                    Debug.Log($"Symbol: {stockSymbol}, Name: {stockName}, Price: {stockPrice}, Change: {stockChange}, Change Percentage: {stockChangePercentage}");
+                    // Debug.Log($"Symbol: {stockSymbol}, Name: {stockName}, Price: {stockPrice}, Change: {stockChange}, Change Percentage: {stockChangePercentage}");
                     AddGeneralStockData(stockSymbol, stockName, stockPrice, stockChange, stockChangePercentage);
                 }
             }

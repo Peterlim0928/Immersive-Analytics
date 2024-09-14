@@ -107,8 +107,6 @@ public class VisualisationGraph : MonoBehaviour
             float zMin = FindMinValue(zData);
             float zMax = FindMaxValue(zData);
             
-            // Debug.Log(String.Format("{0} {1} {2} {3} {4} {5}", xMin, xMax, yMin, yMax, zMin, zMax));
-
             // Count number of data points
             int count;
             if (xData != null)

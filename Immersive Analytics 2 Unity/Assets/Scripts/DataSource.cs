@@ -31,7 +31,10 @@ public class DataSource : MonoBehaviour
     private void OnValidate()
     {
         if (data != null)
-            OnDataChanged();
+        {
+            // Debug.Log("Data has been updated!");
+            ParseCsv(); // Reparse the CSV data whenever the data field is updated
+        }
     }
 
     public void ParseCsv()
@@ -83,12 +86,5 @@ public class DataSource : MonoBehaviour
                 }
             }
         }
-    }
-
-    // Method that gets triggered when the data field is updated
-    private void OnDataChanged()
-    {
-        Debug.Log("Data has been updated!");
-        ParseCsv(); // Reparse the CSV data whenever the data field is updated
     }
 }

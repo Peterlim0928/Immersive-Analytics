@@ -59,7 +59,9 @@
     <Compile Include="Assets\VRTemplateAssets\Scripts\Callout.cs" />
     <Compile Include="Assets\VRTemplateAssets\Scripts\XRPokeFollowAffordanceFill.cs" />
     <Compile Include="Assets\VRTemplateAssets\Scripts\CalloutGazeController.cs" />
+    <Compile Include="Assets\Scripts\Candlestick.cs" />
     <Compile Include="Assets\Scripts\DataSource.cs" />
+    <Compile Include="Assets\Scripts\CandlestickController.cs" />
     <Compile Include="Assets\Scripts\Treemap.cs" />
     <Compile Include="Assets\VRTemplateAssets\Scripts\BezierCurve.cs" />
     <Compile Include="Assets\Scripts\OnButtonPress.cs" />
