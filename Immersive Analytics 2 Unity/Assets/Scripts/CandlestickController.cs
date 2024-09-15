@@ -36,6 +36,8 @@ public class CandlestickController : MonoBehaviour
     private readonly int _canvasWidth = 500;
     private readonly int _canvasHeight = 500;
 
+    private bool _isRunning;
+
     private readonly string[] _stockTimeOptionList = 
     {
         "1 Day", "5 Days", "1 Month", "3 Months", "6 Months", "1 Year", "2 Years", "5 Years", "10 Years",
@@ -73,9 +75,16 @@ public class CandlestickController : MonoBehaviour
     /// </summary>
     void Start()
     {
+        _isRunning = true;
+        
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
         stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
         stockTimeIntervalDropdown.AddOptions(_stockTimeIntervalOptionsList.ToList());
+    }
+
+    private void OnApplicationQuit()
+    {
+        _isRunning = false;
     }
 
     /// <summary>
@@ -142,7 +151,7 @@ public class CandlestickController : MonoBehaviour
         int index = stockRealTimeIntervalDropdown.value;
         int interval = _realTimeUpdateIntervalInMS[index];
 
-        while (true)
+        while (_isRunning)
         {
             // Fetch new data and update the graph
             string pythonScriptPath = ScriptPath;
@@ -241,6 +250,7 @@ public class CandlestickController : MonoBehaviour
     {
         // Find the object that contains all data
         Transform parent = transform.Find("CandlestickGraph").Find("Datapoints");
+        parent.localScale = new Vector3(1f, 1f, 1f);
 
         // Clear all old data in reverse order (avoid mutating while iterating)
         for (int i = parent.childCount - 1; i >= 0; i--)
@@ -257,6 +267,7 @@ public class CandlestickController : MonoBehaviour
             // 1. Create a new GameObject for the candlestick body (Cube)
             GameObject candleBody = GameObject.CreatePrimitive(PrimitiveType.Cube);
             candleBody.transform.SetParent(candle.transform);
+            candleBody.transform.localRotation = Quaternion.identity;
 
             // 2. Position the candle in the x-axis (centered on the xCenter value)
             candleBody.transform.localPosition = new Vector3(dataPoint.xCenter, (dataPoint.openY + dataPoint.closeY) / 2, 0);

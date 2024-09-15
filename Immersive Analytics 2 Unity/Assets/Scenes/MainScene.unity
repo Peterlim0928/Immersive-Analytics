@@ -4762,6 +4762,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6354917495537252, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_Name
+      value: Y-Tip
+      objectReference: {fileID: 0}
+    - target: {fileID: 419600740365387122, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_Name
+      value: X-Tip
+      objectReference: {fileID: 0}
     - target: {fileID: 1282650874571998087, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.572
@@ -4817,6 +4825,34 @@ PrefabInstance:
     - target: {fileID: 3195145398105022142, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
       propertyPath: m_Name
       value: CandlestickGroup
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882595797083144382, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_Name
+      value: X-Axis
+      objectReference: {fileID: 0}
+    - target: {fileID: 5045822033488346024, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_Name
+      value: Y-Axis
+      objectReference: {fileID: 0}
+    - target: {fileID: 5226893211397822980, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334957309843883953, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: axisRodScaling
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5446044841531304968, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_Name
+      value: X-Rod
+      objectReference: {fileID: 0}
+    - target: {fileID: 5570263118897553682, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5643036206537103134, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
+      propertyPath: m_Name
+      value: Y-Rod
       objectReference: {fileID: 0}
     - target: {fileID: 6602127263643369166, guid: 84985b7e54489b744bcb38531aa4ad75, type: 3}
       propertyPath: m_LocalScale.x
