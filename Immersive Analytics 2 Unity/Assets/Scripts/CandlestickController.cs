@@ -35,7 +35,9 @@ public class CandlestickController : MonoBehaviour
     private Candlestick _parsedData;
     private readonly int _canvasWidth = 500;
     private readonly int _canvasHeight = 500;
-
+    private readonly int _maxScaling = 8;
+    private float _rodInitialScaling;
+    private float _tipInitialPosition;
     private bool _isRunning;
 
     private readonly string[] _stockTimeOptionList = 
@@ -61,12 +63,12 @@ public class CandlestickController : MonoBehaviour
 
     private readonly string[] _stockTimeIntervalOptionsList = 
     {
-        "1 min", "2 mins", "5 mins", "15 mins", "30 mins", "60 mins", "1 hour", "1.5 hour", "1 day", "5 days", "1 week", "1 month", "3 months"
+        "1 min", "2 mins", "5 mins", "15 mins", "30 mins", "1 hour", "1.5 hour", "1 day", "5 days", "1 week", "1 month", "3 months"
     };
 
     private readonly string[] _stockTimeIntervalOptions = 
     {
-        "1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d", "5d", "1wk", "1mo", "3mo"
+        "1m", "2m", "5m", "15m", "30m", "60m", "90m", "1d", "5d", "1wk", "1mo", "3mo"
     };
 
     /// <summary>
@@ -76,6 +78,9 @@ public class CandlestickController : MonoBehaviour
     void Start()
     {
         _isRunning = true;
+        
+        _rodInitialScaling = transform.Find("CandlestickGraph").Find("X Axis Rod").localScale.x;
+        _tipInitialPosition = transform.Find("CandlestickGraph").Find("X Axis Tip").localPosition.x;
         
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
         stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
@@ -185,8 +190,26 @@ public class CandlestickController : MonoBehaviour
                 List<DataPoint> dataPoints = ReadCsvToDataPoints(filePath);
 
                 // Create and parse candlestick data
-                _parsedData = new Candlestick(_canvasWidth, _canvasHeight);
+                float scaling = dataPoints.Count / 50f > _maxScaling ? _maxScaling : dataPoints.Count / 50f;
+                _parsedData = new Candlestick(_canvasWidth * scaling, _canvasHeight * scaling);
                 CandlestickData renderData = _parsedData.ParseCandlestickData(dataPoints);
+                
+                // Edit the graph frame
+                Transform graphTransform = transform.Find("CandlestickGraph");
+                
+                // Edit the rod scaling
+                Transform xAxisRod = graphTransform.Find("X Axis Rod");
+                Transform yAxisRod = graphTransform.Find("Y Axis Rod");
+                xAxisRod.localScale = new Vector3(_rodInitialScaling * scaling + 16, xAxisRod.localScale.y, xAxisRod.localScale.z);
+                yAxisRod.localScale = new Vector3(_rodInitialScaling * scaling + 16, yAxisRod.localScale.y, yAxisRod.localScale.z);
+                
+                // Edit the tip position
+                Transform xAxisTip = graphTransform.Find("X Axis Tip");
+                Transform yAxisTip = graphTransform.Find("Y Axis Tip");
+                xAxisTip.localPosition = new Vector3((_tipInitialPosition - 0.02f) * scaling + 0.08f, xAxisTip.localPosition.y,
+                    xAxisTip.localPosition.z);
+                yAxisTip.localPosition = new Vector3(yAxisTip.localPosition.x, (_tipInitialPosition - 0.02f) * scaling + 0.08f,
+                    yAxisTip.localPosition.z);
 
                 // Render the parsed data
                 RenderData(renderData);
@@ -249,19 +272,26 @@ public class CandlestickController : MonoBehaviour
     public void RenderData(CandlestickData renderData)
     {
         // Find the object that contains all data
-        Transform parent = transform.Find("CandlestickGraph").Find("Datapoints");
-        parent.localScale = new Vector3(1f, 1f, 1f);
+        Transform datapointParent = transform.Find("CandlestickGraph").Find("Datapoints");
+        datapointParent.localScale = new Vector3(1f, 1f, 1f);
+        Transform labelParent = transform.Find("CandlestickGraph").Find("Labels");
 
         // Clear all old data in reverse order (avoid mutating while iterating)
-        for (int i = parent.childCount - 1; i >= 0; i--)
+        for (int i = datapointParent.childCount - 1; i >= 0; i--)
         {
-            Destroy(parent.GetChild(i).gameObject);
+            Destroy(datapointParent.GetChild(i).gameObject);
+        }
+        
+        // Clear all old labels in reverse order (both x-axis and y-axis labels)
+        for (int i = labelParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(labelParent.GetChild(i).gameObject);
         }
 
         foreach (var dataPoint in renderData.chartData)
         {
-            GameObject candle = new GameObject();
-            candle.transform.SetParent(parent);
+            GameObject candle = new GameObject("Candle");
+            candle.transform.SetParent(datapointParent);
             candle.transform.localRotation = Quaternion.identity;
 
             // 1. Create a new GameObject for the candlestick body (Cube)
@@ -287,11 +317,74 @@ public class CandlestickController : MonoBehaviour
             candleWick.transform.localPosition = new Vector3(dataPoint.xCenter, (dataPoint.highY + dataPoint.lowY) / 2, 0);
 
             // 7. Scale the wick (thin and tall)
-            candleWick.transform.localScale = new Vector3(0.1f, (dataPoint.highY - dataPoint.lowY) / 2, 0.1f);
+            candleWick.transform.localScale = new Vector3(0.3f, (dataPoint.highY - dataPoint.lowY) / 2, 0.3f);
         }
 
         // Scale down the graph
-        parent.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+        datapointParent.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+        
+        // Add x-axis labels
+        foreach (var xAxisData in renderData.xAxis)
+        {
+            // Create a group that contains the label cylinder and text
+            Transform xLabelGroup = new GameObject("X Label Group").transform;
+            xLabelGroup.transform.SetParent(labelParent);
+            
+            // Create a new cylinder object for the X axis label marker
+            GameObject xAxisLabel = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            xAxisLabel.transform.SetParent(xLabelGroup);
+            xAxisLabel.transform.localPosition = new Vector3(0, 1f, 0);
+            xAxisLabel.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);  // Thin cylinder
+            
+            // Create the text for the label using TextMesh or TMP
+            GameObject xAxisText = new GameObject("X Axis Label");
+            xAxisText.transform.SetParent(xLabelGroup);
+            xAxisText.transform.localPosition = new Vector3(0, -3.5f, 0);  // Slightly below the cylinder marker
+
+            // Add TextMesh component to render text
+            TextMeshPro textMesh = xAxisText.AddComponent<TextMeshPro>();
+            textMesh.text = xAxisData.labelText;
+            textMesh.fontSize = 20;
+            textMesh.color = Color.white;
+            textMesh.alignment = TextAlignmentOptions.Center;
+            
+            // Adjust the group transform
+            xLabelGroup.localScale = new Vector3(1f, 1f, 1f);
+            xLabelGroup.localRotation = new Quaternion(0, 0, 0, 0);
+            xLabelGroup.localPosition = new Vector3(xAxisData.x / 10 + 4, 0, 0);
+        }
+
+        // Add y-axis labels
+        foreach (var yAxisData in renderData.yAxis)
+        {
+            // Create a group that contains the label cylinder and text
+            Transform yLabelGroup = new GameObject("Y Label Group").transform;
+            yLabelGroup.transform.SetParent(labelParent);
+            
+            // Create a new cylinder object for the X axis label marker
+            GameObject yAxisLabel = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            yAxisLabel.transform.SetParent(yLabelGroup);
+            yAxisLabel.transform.localPosition = new Vector3(1, 0, 0);
+            yAxisLabel.transform.localRotation = Quaternion.Euler(0, 0, 90);
+            yAxisLabel.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);  // Thin cylinder
+            
+            // Create the text for the label using TextMesh or TMP
+            GameObject yAxisText = new GameObject("Y Axis Label");
+            yAxisText.transform.SetParent(yLabelGroup);
+            yAxisText.transform.localPosition = new Vector3(-6, 0, 0);  // Slightly to the left of the cylinder marker
+
+            // Add TextMesh component to render text
+            TextMeshPro textMesh = yAxisText.AddComponent<TextMeshPro>();
+            textMesh.text = yAxisData.labelText;
+            textMesh.fontSize = 20;
+            textMesh.color = Color.white;
+            textMesh.alignment = TextAlignmentOptions.Center;
+            
+            // Adjust the group transform
+            yLabelGroup.localScale = new Vector3(1f, 1f, 1f);
+            yLabelGroup.localRotation = new Quaternion(0, 0, 0, 0);
+            yLabelGroup.localPosition = new Vector3(0, yAxisData.y / 10 + 4, 0);
+        }
     }
 
     /// <summary>

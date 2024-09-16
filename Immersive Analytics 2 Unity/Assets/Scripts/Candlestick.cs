@@ -55,22 +55,84 @@ public class Candlestick
 
         // Generate X-axis labels at the start of each month
         List<Label> xLabels = new List<Label>();
-        int lastMonth = -1;
+        DateTime lastTime = DateTime.MinValue; // Initial value for comparison
 
-        for (int i = 0; i < rawData.Count; i++)
+        for (int index = 0; index < rawData.Count; index++)
         {
-            var dataPoint = rawData[i];
-            int currentMonth = dataPoint.time.Month;
+            var dataPoint = rawData[index];
+            var currentTime = dataPoint.time;
+            var nextTime = (index + 1 < rawData.Count) ? rawData[index + 1].time : currentTime;
 
-            if (currentMonth != lastMonth)
+            // Calculate the time difference in milliseconds
+            double timeDiff = (nextTime - currentTime).TotalMilliseconds;
+            string timeInterval;
+
+            // Determine the time interval based on the difference
+            if (timeDiff <= 1000 * 60 * 5) // <= 5 minutes
             {
-                xLabels.Add(new Label
-                {
-                    x = i * dayWidth + dayWidth / 2, // Position in the middle of the day
-                    labelText = dataPoint.time.ToString("MMM yyyy") // e.g., 'Mar 2023'
-                });
-                lastMonth = currentMonth; // Update the last month processed
+                timeInterval = "hour";
             }
+            else if (timeDiff <= 1000 * 60 * 90) // <= 90 minutes
+            {
+                timeInterval = "day";
+            }
+            else if (timeDiff <= 1000 * 60 * 60 * 24 * 7) // <= 1 week
+            {
+                timeInterval = "month";
+            }
+            else
+            {
+                timeInterval = "year";
+            }
+
+            switch (timeInterval)
+            {
+                case "hour":
+                    if (index == 0 || currentTime.Hour != lastTime.Hour)
+                    {
+                        xLabels.Add(new Label
+                        {
+                            x = index * dayWidth + dayWidth / 2, // Position in the middle of the hour
+                            labelText = currentTime.ToString("HH") // e.g., '14'
+                        });
+                    }
+                    break;
+
+                case "day":
+                    if (index == 0 || currentTime.Day != lastTime.Day)
+                    {
+                        xLabels.Add(new Label
+                        {
+                            x = index * dayWidth + dayWidth / 2, // Position in the middle of the day
+                            labelText = currentTime.ToString("dd MMM") // e.g., '25 Mar'
+                        });
+                    }
+                    break;
+
+                case "month":
+                    if (index == 0 || currentTime.Month != lastTime.Month)
+                    {
+                        xLabels.Add(new Label
+                        {
+                            x = index * dayWidth + dayWidth / 2, // Position in the middle of the month
+                            labelText = currentTime.ToString("MMM yyyy") // e.g., 'Mar 2023'
+                        });
+                    }
+                    break;
+
+                case "year":
+                    if (index == 0 || currentTime.Year != lastTime.Year)
+                    {
+                        xLabels.Add(new Label
+                        {
+                            x = index * dayWidth + dayWidth / 2, // Position in the middle of the year
+                            labelText = currentTime.ToString("yyyy") // e.g., '2023'
+                        });
+                    }
+                    break;
+            }
+
+            lastTime = currentTime; // Update lastTime to currentTime
         }
 
         // Y-axis labels remain unchanged, based on value range
