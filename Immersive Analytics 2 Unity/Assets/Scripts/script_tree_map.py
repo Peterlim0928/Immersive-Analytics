@@ -16,8 +16,11 @@ def main():
                             "TME", "DASH", "RDDT", "MTCH",
                             "Z", "BIDU", "ZG", "YELP", "BZFD"]
     
-    stock_industry_code = ["semiconductors", "internet-content-information"]
-    stock_codes_arr = [semiconductor_stock_codes, internet_stock_codes]
+    internet_retail_stock_codes = ["AMZN", "NEGG", "BABA", "PDD", "JD", "W", "ETSY",
+                                   "LOGC", "BYON", "LOGC"]
+    
+    stock_industry_code = ["semiconductors", "internet-content-information", "internet-retail"]
+    stock_codes_arr = [semiconductor_stock_codes, internet_stock_codes, internet_retail_stock_codes]
 
     output_dict = {}
 
