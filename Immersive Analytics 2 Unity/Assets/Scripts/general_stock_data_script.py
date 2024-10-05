@@ -32,12 +32,14 @@ def main():
         previous_price = info.get('previousClose', 0)
         change = round(current_price - previous_price, 2)
         change_percent = round((change / previous_price) * 100, 2)
+        logo_url = info.get('logo_url', 'N/A')
         output_dict[stock_code] = {
             "Name": name,
             "Previous Price": previous_price,
             "Current Price": current_price,
             "Change Figure": change,
-            "Change Percentage": change_percent
+            "Change Percentage": change_percent,
+            "Logo URL": logo_url
         }
 
     print(output_dict)
