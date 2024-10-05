@@ -4249,6 +4249,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8807541812327157849, guid: 57b4fb9d6b048094484326873f0ac765, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 60952dfb31b955c47ae85616f8a822a9, type: 2}
     - target: {fileID: -8679921383154817045, guid: 57b4fb9d6b048094484326873f0ac765, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -4301,6 +4305,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8199033316453928083, guid: 57b4fb9d6b048094484326873f0ac765, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 60952dfb31b955c47ae85616f8a822a9, type: 2}
     - target: {fileID: -6722085885383957590, guid: 57b4fb9d6b048094484326873f0ac765, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -4381,6 +4389,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Background
       objectReference: {fileID: 0}
+    - target: {fileID: 925383192324852266, guid: 57b4fb9d6b048094484326873f0ac765, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 60952dfb31b955c47ae85616f8a822a9, type: 2}
     - target: {fileID: 6709462452163291466, guid: 57b4fb9d6b048094484326873f0ac765, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
