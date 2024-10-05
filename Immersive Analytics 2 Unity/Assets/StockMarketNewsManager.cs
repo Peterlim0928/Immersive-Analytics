@@ -12,9 +12,13 @@ using UnityEngine.Networking;
 
 public class StockMarketNewsManager : MonoBehaviour
 {
-    // References the GenerelNewsItemPrefab
+    // References the GeneralNewsItemPrefab
     public GameObject GeneralNewsItemPrefab;
     public Transform GeneralNewsContent;
+
+    // ScrollView for specific news image
+    public ScrollRect SpecificNewsImageScrollView; 
+    public Image SpecificNewsImage;  // This will hold the image inside the ScrollView
 
     [System.Serializable]
     public class GeneralNews
@@ -24,23 +28,21 @@ public class StockMarketNewsManager : MonoBehaviour
         public string generalNewsDateTime;
         public string generalNewsImageURL;
         public string generalNewsSentimentCategory;
+        public string specificNewsURL;
     }
 
     public List<GeneralNews> generalNewsData = new List<GeneralNews>();
 
     private const string GeneralStockMarketNewsScriptPath = "./Assets/Scripts/script_general_stock_market_news.py";
+    private const string RetrieveWebpageScriptPath = "./Assets/Scripts/script_url_screenshot_retrieval.py";
 
     // Start is called before the first frame update
     void Start()
     {
         InitialiseGeneralStockNewsData();
         PopulateGeneralStockNewsDataUI();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        // LoadImageFromFile("./Assets/webpage_screenshot.png"); // Load the specific image on Start
+        // SpecificNewsImageScrollView.verticalNormalizedPosition = 1f;
     }
 
     public void RunPythonScript()
@@ -69,6 +71,7 @@ public class StockMarketNewsManager : MonoBehaviour
                     generalNews.generalNewsDateTime = news["time_published"];
                     generalNews.generalNewsImageURL = news["image_url"];
                     generalNews.generalNewsSentimentCategory = news["sentiment_label"];
+                    generalNews.specificNewsURL = news["url"];
                     generalNewsData.Add(generalNews);
                 }
             }
@@ -83,6 +86,14 @@ public class StockMarketNewsManager : MonoBehaviour
     public void InitialiseGeneralStockNewsData()
     {
         RunPythonScript();
+        // GeneralNews generalNews = new GeneralNews();
+        // generalNews.generalNewsTitle = "Huge News for Apple Stock Investors";
+        // generalNews.generalNewsSource = "NASDAQ";
+        // generalNews.generalNewsDateTime = "Oct_03_20224";
+        // generalNews.generalNewsImageURL = "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg";
+        // generalNews.generalNewsSentimentCategory = "bearish";
+        // generalNews.specificNewsURL = "https://finance.yahoo.com/news/apple-plans-open-four-stores-131707836.html";
+        // generalNewsData.Add(generalNews);
     }
 
     public void PopulateGeneralStockNewsDataUI()
@@ -105,7 +116,12 @@ public class StockMarketNewsManager : MonoBehaviour
             sentimentPanelImage.color = GetColourForSentiment(news.generalNewsSentimentCategory);
 
             StartCoroutine(LoadImageFromURL(news.generalNewsImageURL, newGeneralNews.transform.Find("GeneralNewsImage").GetComponent<Image>()));
+            
+            // Find the SubWatchlistButton Button
+            Button addToWatchlistButton = newGeneralNews.transform.Find("ReadMoreButton").GetComponent<Button>();
+            Image buttonImage = addToWatchlistButton.GetComponent<Image>();
 
+            addToWatchlistButton.onClick.AddListener(() => ReadMoreButtonHandler(news.specificNewsURL));
         }
     }
 
@@ -185,8 +201,67 @@ public class StockMarketNewsManager : MonoBehaviour
         }
     }
 
-    public void ReadMoreButtonHandler()
+    public void ReadMoreButtonHandler(string newsUrl)
     {
-        Debug.Log("Read more button clicked!");
+        Debug.Log("ReadMore");
+        string webpageImageFilePath = $"./Assets/WebpageImage/image.png";
+        Debug.Log($"{RetrieveWebpageScriptPath} {newsUrl} {webpageImageFilePath}");
+        ProcessStartInfo start = new ProcessStartInfo();
+        start.FileName = "python";
+        start.Arguments = $"{RetrieveWebpageScriptPath} {newsUrl} {webpageImageFilePath}";
+        start.UseShellExecute = false;
+        start.RedirectStandardOutput = true;
+        start.RedirectStandardError = true;
+        start.CreateNoWindow = true;
+        
+        using (Process process = Process.Start(start))
+        {
+            string error = process.StandardError.ReadToEnd();
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(error);
+            }
+        }
+        LoadImageFromFile(webpageImageFilePath);
+        SpecificNewsImageScrollView.verticalNormalizedPosition = 1f;
+    }
+
+    // New function to load specific image in original size
+    public void LoadImageFromFile(string filePath)
+    {
+        StartCoroutine(LoadImageWithOriginalSize(filePath));
+    }
+
+    IEnumerator LoadImageWithOriginalSize(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Debug.LogError("File not found: " + filePath);
+            yield break;
+        }
+
+        byte[] fileData = File.ReadAllBytes(filePath);
+        Texture2D texture = new Texture2D(2, 2);
+
+        if (!texture.LoadImage(fileData))
+        {
+            Debug.LogError("Failed to load image from file.");
+            yield break;
+        }
+
+        // Create a sprite from the texture
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+        // Assign the sprite to the SpecificNewsImage Image component
+        SpecificNewsImage.sprite = sprite;
+        
+        // Calculate the aspect ratio of the image
+        float aspectRatio = (float)texture.width / texture.height;
+
+        // Set the size of the image to the original size of the texture
+        RectTransform rectTransform = SpecificNewsImage.GetComponent<RectTransform>();
+        float imageWidth = 750;
+        rectTransform.sizeDelta = new Vector2(imageWidth, imageWidth/aspectRatio);
+
     }
 }

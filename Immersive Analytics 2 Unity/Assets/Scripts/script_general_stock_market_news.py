@@ -31,6 +31,7 @@ def process_news_data(raw_data):
             "sentiment_label": news["overall_sentiment_label"],
             "time_published": convert_to_readable_format(news["time_published"]),
             "image_url": news["banner_image"] if news["banner_image"] != None else "None",
+            "url": news["url"],
         }
         processed_data.append(news_data)
     return processed_data
