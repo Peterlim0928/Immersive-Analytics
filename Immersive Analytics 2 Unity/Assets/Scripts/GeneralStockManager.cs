@@ -41,6 +41,8 @@ public class GeneralStockManager : MonoBehaviour
     // Correct the list declarations
     public List<StockDataBase> generalStockData = new List<StockDataBase>();
     private List<StockDataBase> watchlistData = new List<StockDataBase>();
+    private Dictionary<string, Image> stockHeartIcons = new Dictionary<string, Image>();
+
 
 
     private const string GeneralStockDataScriptPath = "./Assets/Scripts/general_stock_data_script.py";
@@ -92,6 +94,9 @@ public class GeneralStockManager : MonoBehaviour
             // Find the AddToWatchlist Button
             Button addToWatchlistButton = newStock.transform.Find("AddWatchlistButton").GetComponent<Button>();
             Image buttonImage = addToWatchlistButton.GetComponent<Image>();
+
+            // Store the heart icon reference in the dictionary
+            stockHeartIcons[castedStockData.stockSymbol] = buttonImage;
 
             addToWatchlistButton.onClick.AddListener(() => MainWatchlistButtonHandler(castedStockData, buttonImage));
 
@@ -216,6 +221,12 @@ public class GeneralStockManager : MonoBehaviour
         {
             buttonImage.sprite = emptyHeartSprite;
             RemoveFromWatchlist(stockData);
+
+            // Update heart icon in the main panel
+            if (stockHeartIcons.ContainsKey(stockData.stockSymbol))
+            {
+                stockHeartIcons[stockData.stockSymbol].sprite = emptyHeartSprite;
+            }
         }
     }
 
@@ -241,7 +252,6 @@ public class GeneralStockManager : MonoBehaviour
         {
             watchlistData.Remove(stockToRemove);
             PopulateWatchlistDataUI();
-            PopulateGeneralStockDataUI();
         }
 
     }
