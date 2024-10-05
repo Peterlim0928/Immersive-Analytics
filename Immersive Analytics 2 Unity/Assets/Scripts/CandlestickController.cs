@@ -22,7 +22,6 @@ public class CandlestickController : MonoBehaviour
     // Stock code input field and dropdowns
     public TMP_InputField stockCodeInputField;
     public TMP_Dropdown stockTimeDropdown;
-    public TMP_Dropdown stockTimeIntervalDropdown;
     public TMP_Dropdown stockRealTimeIntervalDropdown;
 
     // Real-time data variables
@@ -35,6 +34,7 @@ public class CandlestickController : MonoBehaviour
     private Candlestick _parsedData;
     private readonly int _canvasWidth = 500;
     private readonly int _canvasHeight = 500;
+    private readonly int _minScaling = 2;
     private readonly int _maxScaling = 8;
     private float _rodInitialScaling;
     private float _tipInitialPosition;
@@ -42,13 +42,12 @@ public class CandlestickController : MonoBehaviour
 
     private readonly string[] _stockTimeOptionList = 
     {
-        "1 Day", "5 Days", "1 Month", "3 Months", "6 Months", "1 Year", "2 Years", "5 Years", "10 Years",
-        "Year To Date", "All"
+        "1 Day", "5 Days", "1 Month", "6 Months", "Year To Date", "1 Year", "5 Years", "Max"
     };
 
     private readonly string[] _stockTimeList = 
     {
-        "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"
+        "1d", "5d", "1mo", "6mo", "ytd", "1y", "5y", "max"
     };
 
     private readonly string[] _realTimeUpdateIntervalOptions = 
@@ -59,16 +58,6 @@ public class CandlestickController : MonoBehaviour
     private readonly int[] _realTimeUpdateIntervalInMS = 
     {
         15000, 30000, 60000, 300000, 900000, 1800000, 3600000, 10800000, 18000000
-    };
-
-    private readonly string[] _stockTimeIntervalOptionsList = 
-    {
-        "1 min", "2 mins", "5 mins", "15 mins", "30 mins", "1 hour", "1.5 hour", "1 day", "5 days", "1 week", "1 month", "3 months"
-    };
-
-    private readonly string[] _stockTimeIntervalOptions = 
-    {
-        "1m", "2m", "5m", "15m", "30m", "60m", "90m", "1d", "5d", "1wk", "1mo", "3mo"
     };
 
     /// <summary>
@@ -84,7 +73,6 @@ public class CandlestickController : MonoBehaviour
         
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
         stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
-        stockTimeIntervalDropdown.AddOptions(_stockTimeIntervalOptionsList.ToList());
     }
 
     private void OnApplicationQuit()
@@ -100,9 +88,36 @@ public class CandlestickController : MonoBehaviour
     public void ReadStockOptions()
     {
         _stockTimePeriod = stockTimeDropdown.value;
-        _stockTimeInterval = _stockTimeIntervalOptions[stockTimeIntervalDropdown.value];
         string chosenTime = _stockTimeList[_stockTimePeriod];
 
+        switch (stockTimeDropdown.value)
+        {
+            case 0:
+                _stockTimeInterval = "15m";
+                break;
+            case 1:
+                _stockTimeInterval = "90m";
+                break;
+            case 2:
+                _stockTimeInterval = "1d";
+                break;
+            case 3:
+                _stockTimeInterval = "5d";
+                break;
+            case 4:
+                _stockTimeInterval = "5d";
+                break;
+            case 5:
+                _stockTimeInterval = "1wk";
+                break;
+            case 6:
+                _stockTimeInterval = "1mo";
+                break;
+            case 7:
+                _stockTimeInterval = "3mo";
+                break;
+        }
+        
         // Run the Python script to download stock data
         string pythonScriptPath = ScriptPath;
         string pythonArgs = $"{stockCodeInputField.text} {chosenTime} {_stockTimeInterval}";
@@ -191,6 +206,7 @@ public class CandlestickController : MonoBehaviour
 
                 // Create and parse candlestick data
                 float scaling = dataPoints.Count / 50f > _maxScaling ? _maxScaling : dataPoints.Count / 50f;
+                scaling = scaling < _minScaling ? _minScaling : scaling;
                 _parsedData = new Candlestick(_canvasWidth * scaling, _canvasHeight * scaling);
                 CandlestickData renderData = _parsedData.ParseCandlestickData(dataPoints);
                 
