@@ -75,12 +75,15 @@ public class GeneralStockManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-
+        int counter = 0;
         foreach (StockDataBase stockData in generalStockData)
         {
             GeneralStockData castedStockData = (GeneralStockData)stockData;
 
             GameObject newStock = Instantiate(StockItemPrefab, GeneralStockContent);
+            newStock.GetComponent<Image>().color = counter++ % 2 == 0 
+                ? new Color(182 / 255f, 182 / 255f, 182 / 255f, 190 / 255f) 
+                : new Color(221 / 255f, 221 / 255f, 221 / 255f, 190 / 255f);
 
             TextMeshProUGUI stockSymbol = newStock.transform.Find("StockSymbol").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI stockName = newStock.transform.Find("StockName").GetComponent<TextMeshProUGUI>();
@@ -164,6 +167,7 @@ public class GeneralStockManager : MonoBehaviour
         start.RedirectStandardError = true;
         start.CreateNoWindow = true;
 
+        int counter = 0;
         using (Process process = Process.Start(start))
         {
             using (StreamReader reader = process.StandardOutput)
