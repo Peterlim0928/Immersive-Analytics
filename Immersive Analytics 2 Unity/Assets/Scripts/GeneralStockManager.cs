@@ -95,7 +95,18 @@ public class GeneralStockManager : MonoBehaviour
             stockChange.text = castedStockData.stockChange.ToString();
             stockChangePercentage.text = castedStockData.stockChangePercentage.ToString();
 
-            StartCoroutine(LoadImageFromURL(castedStockData.stockLogo, newStock.transform.Find("StockLogo").GetComponent<Image>()));
+            if (castedStockData.stockChange > 0)
+            {
+                stockChange.color = new Color(0.0f, 0.5f, 0.0f);
+                stockChangePercentage.color = new Color(0.0f, 0.5f, 0.0f);
+            }
+            else
+            {
+                stockChange.color = Color.red;
+                stockChangePercentage.color = Color.red;
+            }
+
+            StartCoroutine(LoadImageFromURL(castedStockData.stockLogo, newStock.transform.Find("StockLogo").GetComponent<Image>(), 42));
             // Find the AddToWatchlist Button
             Button addToWatchlistButton = newStock.transform.Find("AddWatchlistButton").GetComponent<Button>();
             Image buttonImage = addToWatchlistButton.GetComponent<Image>();
@@ -132,6 +143,8 @@ public class GeneralStockManager : MonoBehaviour
             stockName.text = castedStockData.stockName;
             stockPrice.text = castedStockData.stockPrice.ToString();
             stockChangePercentage.text = castedStockData.stockChangePercentage.ToString();
+
+            StartCoroutine(LoadImageFromURL(castedStockData.stockLogo, newStock.transform.Find("StockIcon").GetComponent<Image>(), 50));
 
             // Find the SubWatchlistButton Button
             Button addToWatchlistButton = newStock.transform.Find("SubWatchlistButton").GetComponent<Button>();
@@ -263,7 +276,7 @@ public class GeneralStockManager : MonoBehaviour
         }
     }
 
-    IEnumerator LoadImageFromURL(string url, Image imageComponent)
+    IEnumerator LoadImageFromURL(string url, Image imageComponent, int imageSize)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
         yield return request.SendWebRequest();
@@ -283,7 +296,7 @@ public class GeneralStockManager : MonoBehaviour
             imageComponent.sprite = sprite;
 
             RectTransform rectTransform = imageComponent.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(28, 28);
+            rectTransform.sizeDelta = new Vector2(imageSize, imageSize);
 
             // Optionally, enable "Preserve Aspect" on the Image component to avoid distortion
             imageComponent.preserveAspect = true;

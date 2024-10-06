@@ -18,7 +18,7 @@ public class StockMarketNewsManager : MonoBehaviour
     public Transform GeneralNewsContent;
 
     // ScrollView for specific news image
-    public ScrollRect SpecificNewsImageScrollView; 
+    public ScrollRect SpecificNewsImageScrollView;
     public Image SpecificNewsImage;  // This will hold the image inside the ScrollView
 
     [System.Serializable]
@@ -117,7 +117,7 @@ public class StockMarketNewsManager : MonoBehaviour
             sentimentPanelImage.color = GetColourForSentiment(news.generalNewsSentimentCategory);
 
             StartCoroutine(LoadImageFromURL(news.generalNewsImageURL, newGeneralNews.transform.Find("GeneralNewsImage").GetComponent<Image>()));
-            
+
             // Find the SubWatchlistButton Button
             Button addToWatchlistButton = newGeneralNews.transform.Find("ReadMoreButton").GetComponent<Button>();
             Image buttonImage = addToWatchlistButton.GetComponent<Image>();
@@ -152,11 +152,11 @@ public class StockMarketNewsManager : MonoBehaviour
             RectTransform rectTransform = imageComponent.GetComponent<RectTransform>();
             if (aspectRatio > 1) // If the image is wider than tall
             {
-                rectTransform.sizeDelta = new Vector2(70, 700 / aspectRatio);
+                rectTransform.sizeDelta = new Vector2(110, 1100 / aspectRatio);
             }
             else // If the image is taller than wide or square
             {
-                rectTransform.sizeDelta = new Vector2(70 * aspectRatio, 70);
+                rectTransform.sizeDelta = new Vector2(110 * aspectRatio, 110);
             }
 
             // Optionally, enable "Preserve Aspect" on the Image component to avoid distortion
@@ -265,14 +265,14 @@ public class StockMarketNewsManager : MonoBehaviour
 
         // Assign the sprite to the SpecificNewsImage Image component
         SpecificNewsImage.sprite = sprite;
-        
+
         // Calculate the aspect ratio of the image
         float aspectRatio = (float)texture.width / texture.height;
 
         // Set the size of the image to the original size of the texture
         RectTransform rectTransform = SpecificNewsImage.GetComponent<RectTransform>();
-        float imageWidth = 750;
-        rectTransform.sizeDelta = new Vector2(imageWidth, imageWidth/aspectRatio);
+        float imageWidth = 900;
+        rectTransform.sizeDelta = new Vector2(imageWidth, imageWidth / aspectRatio);
 
     }
 }
