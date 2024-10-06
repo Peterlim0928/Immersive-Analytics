@@ -78,9 +78,9 @@ public class TreemapController : MonoBehaviour
                     TreemapData parent = new TreemapData();
 
                     parent.child = child;
-                    parent.data = 1; // TODO: Un-hardcode
+                    parent.data = child.Average(item => item.data);
                     parent.stockCode = outerTreeData.Key;
-                    parent.positive = true; // TODO: Un-hardcode
+                    parent.positive = parent.data > 0;
                     
                     _parsedData.Add(parent);
                 }
@@ -167,7 +167,7 @@ public class TreemapController : MonoBehaviour
             // Add TextMesh component for displaying text
             TextMeshPro textMesh = textObject.AddComponent<TextMeshPro>();
             textMesh.rectTransform.sizeDelta = new Vector2(100, 20);
-            textMesh.text = $"{renderData.data.stockCode}\n{renderData.data.data}"; // Display the data value as text
+            textMesh.text = $"{renderData.data.stockCode}\n{Math.Round(renderData.data.data, 3)}%"; // Display the data value as text
             textMesh.fontSize = 72;
             textMesh.color = Color.black; // Set text color
             textMesh.alignment = TextAlignmentOptions.Center;
