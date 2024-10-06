@@ -16,7 +16,6 @@ def main(stock_code):
     long_business_summary = info.get('longBusinessSummary', 'N/A')
     total_revenue = info.get('totalRevenue', 'N/A')
     financial_currency = info.get('financialCurrency', 'N/A')
-    logo_url = info.get('logo_url', 'N/A')
     output_dict = {
         "Name": name,
         "Country": country,
@@ -24,13 +23,11 @@ def main(stock_code):
         "Sector": sector,
         "Long Business Summary": long_business_summary,
         "Total Revenue": total_revenue,
-        "Financial Currency": financial_currency,
-        "Logo URL": logo_url
+        "Financial Currency": financial_currency
     }
-
     print(output_dict)
 
 
 if __name__ == "__main__":
     _, stock_code = sys.argv
-    main(stock_code)
+    main(stock_code[1])
