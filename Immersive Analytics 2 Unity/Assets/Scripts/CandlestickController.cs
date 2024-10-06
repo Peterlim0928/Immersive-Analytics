@@ -85,7 +85,7 @@ public class CandlestickController : MonoBehaviour
     /// the Python script to download stock data. Also sets up real-time
     /// updating for the candlestick graph.
     /// </summary>
-    public void ReadStockOptions()
+    public async void ReadStockOptions()
     {
         _stockTimePeriod = stockTimeDropdown.value;
         string chosenTime = _stockTimeList[_stockTimePeriod];
@@ -126,7 +126,7 @@ public class CandlestickController : MonoBehaviour
         _stockCode = stockCodeInputField.text.ToUpper();
         _stockTimeOption = chosenTime;
 
-        RunPythonScript(pythonScriptPath, pythonArgs);
+        await RunPythonScript(pythonScriptPath, pythonArgs);
         UpdateGraphRealTime();
     }
 
@@ -136,7 +136,7 @@ public class CandlestickController : MonoBehaviour
     /// </summary>
     /// <param name="scriptPath">The path to the Python script.</param>
     /// <param name="arguments">Arguments to pass to the Python script.</param>
-    public void RunPythonScript(string scriptPath, string arguments)
+    public async Task RunPythonScript(string scriptPath, string arguments)
     {
         ProcessStartInfo start = new ProcessStartInfo
         {
@@ -148,18 +148,22 @@ public class CandlestickController : MonoBehaviour
             CreateNoWindow = true
         };
 
-        using (Process process = Process.Start(start))
+        await Task.Run(() =>
         {
-            using (StreamReader reader = process.StandardOutput)
+            using (Process process = Process.Start(start))
             {
-                reader.ReadToEnd();
+                using (StreamReader reader = process.StandardOutput)
+                {
+                    reader.ReadToEnd();
+                }
+
+                string error = process.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogError(error);
+                }
             }
-            string error = process.StandardError.ReadToEnd();
-            if (!string.IsNullOrEmpty(error))
-            {
-                Debug.LogError(error);
-            }
-        }
+        });
     }
 
     /// <summary>
@@ -176,7 +180,7 @@ public class CandlestickController : MonoBehaviour
             // Fetch new data and update the graph
             string pythonScriptPath = ScriptPath;
             string pythonArgs = $"{_stockCode} {_stockTimeOption} {_stockTimeInterval}";
-            RunPythonScript(pythonScriptPath, pythonArgs);
+            await RunPythonScript(pythonScriptPath, pythonArgs);
 
             UpdateGraph();
 
