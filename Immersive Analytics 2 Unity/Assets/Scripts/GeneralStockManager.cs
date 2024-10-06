@@ -1,12 +1,15 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 using TMPro;
 using Newtonsoft.Json;
+using UnityEngine.Networking;
+
 
 public class GeneralStockManager : MonoBehaviour
 {
@@ -24,6 +27,7 @@ public class GeneralStockManager : MonoBehaviour
         public string stockName;
         public double stockPrice;
         public double stockChangePercentage;
+        public string stockLogo;
 
     }
 
@@ -91,6 +95,7 @@ public class GeneralStockManager : MonoBehaviour
             stockChange.text = castedStockData.stockChange.ToString();
             stockChangePercentage.text = castedStockData.stockChangePercentage.ToString();
 
+            StartCoroutine(LoadImageFromURL(castedStockData.stockLogo, newStock.transform.Find("StockLogo").GetComponent<Image>()));
             // Find the AddToWatchlist Button
             Button addToWatchlistButton = newStock.transform.Find("AddWatchlistButton").GetComponent<Button>();
             Image buttonImage = addToWatchlistButton.GetComponent<Image>();
@@ -165,9 +170,10 @@ public class GeneralStockManager : MonoBehaviour
                     double stockPrice = Convert.ToDouble(stockDetails["Current Price"]);
                     double stockChange = Convert.ToDouble(stockDetails["Change Figure"]);
                     double stockChangePercentage = Convert.ToDouble(stockDetails["Change Percentage"]);
+                    string stockLogo = $"https://assets.parqet.com/logos/symbol/{stockSymbol}?format=jpg";
 
                     // Debug.Log($"Symbol: {stockSymbol}, Name: {stockName}, Price: {stockPrice}, Change: {stockChange}, Change Percentage: {stockChangePercentage}");
-                    AddGeneralStockData(stockSymbol, stockName, stockPrice, stockChange, stockChangePercentage);
+                    AddGeneralStockData(stockSymbol, stockName, stockPrice, stockChange, stockChangePercentage, stockLogo);
                 }
             }
             string error = process.StandardError.ReadToEnd();
@@ -183,7 +189,7 @@ public class GeneralStockManager : MonoBehaviour
         RunPythonScript();
     }
 
-    private void AddGeneralStockData(string newStockSymbol, string newStockName, double newStockPrice, double newStockChange, double newStockChangePercentage)
+    private void AddGeneralStockData(string newStockSymbol, string newStockName, double newStockPrice, double newStockChange, double newStockChangePercentage, string newStockLogo)
     {
         GeneralStockData newStockData = new GeneralStockData
         {
@@ -191,7 +197,8 @@ public class GeneralStockManager : MonoBehaviour
             stockName = newStockName,
             stockPrice = newStockPrice,
             stockChange = newStockChange,
-            stockChangePercentage = newStockChangePercentage
+            stockChangePercentage = newStockChangePercentage,
+            stockLogo = newStockLogo
         };
 
         generalStockData.Add(newStockData);
@@ -237,7 +244,8 @@ public class GeneralStockManager : MonoBehaviour
             stockSymbol = stockData.stockSymbol,
             stockName = stockData.stockName,
             stockPrice = stockData.stockPrice,
-            stockChangePercentage = stockData.stockChangePercentage
+            stockChangePercentage = stockData.stockChangePercentage,
+            stockLogo = stockData.stockLogo
         };
 
         watchlistData.Add(newWatchlistData);
@@ -253,6 +261,32 @@ public class GeneralStockManager : MonoBehaviour
             watchlistData.Remove(stockToRemove);
             PopulateWatchlistDataUI();
         }
+    }
 
+    IEnumerator LoadImageFromURL(string url, Image imageComponent)
+    {
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Failed to load image: " + request.error);
+        }
+        else
+        {
+            Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+
+            // Create a sprite from the texture
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+            // Assign the sprite to the Image component
+            imageComponent.sprite = sprite;
+
+            RectTransform rectTransform = imageComponent.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(28, 28);
+
+            // Optionally, enable "Preserve Aspect" on the Image component to avoid distortion
+            imageComponent.preserveAspect = true;
+        }
     }
 }
