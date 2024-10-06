@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 using Debug = UnityEngine.Debug;
 using TMPro;
 using Newtonsoft.Json;
@@ -206,22 +207,32 @@ public class StockMarketNewsManager : MonoBehaviour
         Debug.Log("ReadMore");
         string webpageImageFilePath = $"./Assets/WebpageImage/image.png";
         Debug.Log($"{RetrieveWebpageScriptPath} {newsUrl} {webpageImageFilePath}");
-        ProcessStartInfo start = new ProcessStartInfo();
-        start.FileName = "python";
-        start.Arguments = $"{RetrieveWebpageScriptPath} {newsUrl} {webpageImageFilePath}";
-        start.UseShellExecute = false;
-        start.RedirectStandardOutput = true;
-        start.RedirectStandardError = true;
-        start.CreateNoWindow = true;
-        
-        using (Process process = Process.Start(start))
+        RunPythonDownloadImgScript(newsUrl, webpageImageFilePath);
+    }
+
+    public async Task RunPythonDownloadImgScript(string newsUrl, string webpageImageFilePath)
+    {
+        ProcessStartInfo start = new ProcessStartInfo
         {
-            string error = process.StandardError.ReadToEnd();
-            if (!string.IsNullOrEmpty(error))
+            FileName = "python",
+            Arguments = $"{RetrieveWebpageScriptPath} {newsUrl} {webpageImageFilePath}",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+
+        await Task.Run(() =>
+        {
+            using (Process process = Process.Start(start))
             {
-                Debug.LogError(error);
+                string error = process.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogError(error);
+                }
             }
-        }
+        });
         LoadImageFromFile(webpageImageFilePath);
         SpecificNewsImageScrollView.verticalNormalizedPosition = 1f;
     }
