@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -87,6 +88,19 @@ public class CandlestickController : MonoBehaviour
     /// </summary>
     public async void ReadStockOptions()
     {
+        // Regex pattern for validating the ticker symbol
+        string pattern = @"^[A-Z]{1,5}(\.[A-Z]{1,2})?$";
+
+        // Get the text from the input field
+        string stockCode = stockCodeInputField.text.ToUpper();
+
+        // Perform regex validation
+        if (!Regex.IsMatch(stockCode, pattern))
+        {
+            Debug.LogError("Invalid stock code. Please enter a valid ticker symbol.");
+            return; // Exit the function if the input is invalid
+        }
+        
         _stockTimePeriod = stockTimeDropdown.value;
         string chosenTime = _stockTimeList[_stockTimePeriod];
 
@@ -123,7 +137,7 @@ public class CandlestickController : MonoBehaviour
         string pythonArgs = $"{stockCodeInputField.text} {chosenTime} {_stockTimeInterval}";
 
         // Set up variables for real-time updates
-        _stockCode = stockCodeInputField.text.ToUpper();
+        _stockCode = stockCode;
         _stockTimeOption = chosenTime;
 
         await RunPythonScript(pythonScriptPath, pythonArgs);
