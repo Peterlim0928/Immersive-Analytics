@@ -19,8 +19,16 @@ def main():
     internet_retail_stock_codes = ["AMZN", "NEGG", "BABA", "PDD", "JD", "W", "ETSY",
                                    "LOGC", "BYON", "LOGC"]
     
-    stock_industry_code = ["semiconductors", "internet-content-information", "internet-retail"]
-    stock_codes_arr = [semiconductor_stock_codes, internet_stock_codes, internet_retail_stock_codes]
+    oil_gas_stock_codes = ["XOM", "CVX", "SHEL", "TTE", "PB", "BP", "CRGY", "NFG", "SU", "IMO", "EQNR"]
+
+    consumer_electronics_stock_codes = ["MSN", "HEAR", "SONY", "GPRO", "LPL", "AAPL", "VIZIO", "FOXX", "FEBO"]
+
+    auto_manufactures_stock_codes = ["TSLA", "XPEV", "HMC", "TM", "LI", "GM", "F", "NIO", "ZK", "LOT", "RACE"]
+    
+
+    
+    stock_industry_code = ["semiconductors", "internet-content-information", "internet-retail", "oil-gas", "consumer-electronics", "auto-manufactures"]
+    stock_codes_arr = [semiconductor_stock_codes, internet_stock_codes, internet_retail_stock_codes, oil_gas_stock_codes, consumer_electronics_stock_codes, auto_manufactures_stock_codes]
 
     output_dict = {}
 
