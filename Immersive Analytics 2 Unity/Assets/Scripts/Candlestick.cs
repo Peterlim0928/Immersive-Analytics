@@ -178,6 +178,7 @@ public class Candlestick
 
         return new CandlestickData
         {
+            rawData = rawData,
             graphData = new GraphData
             {
                 width = canvasWidth,
@@ -228,6 +229,8 @@ public class DataPoint
 /// </summary>
 public class CandlestickData
 {
+    public List<DataPoint> rawData { get; set; }
+    
     /// <summary>
     /// The graph's dimensions and value range.
     /// </summary>

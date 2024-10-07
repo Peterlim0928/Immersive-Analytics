@@ -77,10 +77,12 @@ public class TreemapController : MonoBehaviour
 
                     TreemapData parent = new TreemapData();
 
+                    double tempData = child.Average(item => item.data * (item.positive ? 1 : -1));
+
                     parent.child = child;
-                    parent.data = child.Average(item => item.data * (item.positive ? 1 : -1));
+                    parent.data = Math.Abs(tempData);
                     parent.stockCode = outerTreeData.Key;
-                    parent.positive = parent.data > 0;
+                    parent.positive = tempData > 0;
                     
                     _parsedData.Add(parent);
                 }

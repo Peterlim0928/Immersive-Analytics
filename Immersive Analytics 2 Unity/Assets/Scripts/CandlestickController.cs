@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
@@ -39,6 +41,7 @@ public class CandlestickController : MonoBehaviour
     private readonly int _maxScaling = 8;
     private float _rodInitialScaling;
     private float _tipInitialPosition;
+    private float _detailCanvasInitialPosition;
     private bool _isRunning;
 
     private readonly string[] _stockTimeOptionList = 
@@ -71,6 +74,7 @@ public class CandlestickController : MonoBehaviour
         
         _rodInitialScaling = transform.Find("CandlestickGraph").Find("X Axis Rod").localScale.x;
         _tipInitialPosition = transform.Find("CandlestickGraph").Find("X Axis Tip").localPosition.x;
+        _detailCanvasInitialPosition = transform.Find("CandlestickGraph").Find("DetailCanvas").localPosition.x;
         
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
         stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
@@ -244,6 +248,12 @@ public class CandlestickController : MonoBehaviour
                     xAxisTip.localPosition.z);
                 yAxisTip.localPosition = new Vector3(yAxisTip.localPosition.x, (_tipInitialPosition - 0.02f) * scaling + 0.08f,
                     yAxisTip.localPosition.z);
+                
+                // Move the details canvas based on how much the graph scaled
+                Transform detailCanvasTransform = transform.Find("CandlestickGraph").Find("DetailCanvas").transform;
+                Vector3 detailCanvasPos = detailCanvasTransform.localPosition;
+                detailCanvasPos.x = _detailCanvasInitialPosition + scaling / 2.75f;
+                detailCanvasTransform.transform.localPosition = detailCanvasPos;
 
                 // Render the parsed data
                 RenderData(renderData);
@@ -321,42 +331,70 @@ public class CandlestickController : MonoBehaviour
         {
             Destroy(labelParent.GetChild(i).gameObject);
         }
-
-        foreach (var dataPoint in renderData.chartData)
+        
+        for (int i = 0; i < renderData.chartData.Count; i++)
         {
+            var dataPoint = renderData.chartData[i];
+            var rawDataPoint = renderData.rawData[i];
+            
             GameObject candle = new GameObject("Candle");
             candle.transform.SetParent(datapointParent);
             candle.transform.localRotation = Quaternion.identity;
 
-            // 1. Create a new GameObject for the candlestick body (Cube)
+            // Create a new GameObject for the candlestick body (Cube)
             GameObject candleBody = GameObject.CreatePrimitive(PrimitiveType.Cube);
             candleBody.transform.SetParent(candle.transform);
             candleBody.transform.localRotation = Quaternion.identity;
 
-            // 2. Position the candle in the x-axis (centered on the xCenter value)
+            // Position the candle in the x-axis (centered on the xCenter value)
             candleBody.transform.localPosition = new Vector3(dataPoint.xCenter, (dataPoint.openY + dataPoint.closeY) / 2, 0);
 
-            // 3. Scale the body height (difference between open and close prices)
+            // Scale the body height (difference between open and close prices)
             candleBody.transform.localScale = new Vector3(dataPoint.dayWidth, Math.Abs(dataPoint.closeY - dataPoint.openY), 10);
 
-            // 4. Color the body (Green for bullish, Red for bearish)
-            Renderer bodyRenderer = candleBody.GetComponent<Renderer>();
-            bodyRenderer.material.color = dataPoint.isBullish ? Color.green : Color.red;
-
-            // 5. Create the wick (Cylinder) for the high-low range
+            // Create the wick (Cylinder) for the high-low range
             GameObject candleWick = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             candleWick.transform.SetParent(candle.transform);
             candleWick.transform.localRotation = Quaternion.identity;
             
-            // 6. Color the wick (Same as the cube)
+            // Create a material for both the wick and body
+            Material material = candleBody.GetComponent<Renderer>().material;
+            material.color = dataPoint.isBullish ? Color.green : Color.red;
+            
+            // Color the body and wick (Green for bullish, Red for bearish)
+            Renderer bodyRenderer = candleBody.GetComponent<Renderer>();
+            bodyRenderer.material = material;
             Renderer wickRenderer = candleWick.GetComponent<Renderer>();
-            wickRenderer.material.color = dataPoint.isBullish ? Color.green : Color.red;
+            wickRenderer.material = material;
+            
+            // Create highlighted version of the material
+            Material highlightedMaterial = new Material(material);
+            highlightedMaterial.EnableKeyword("_EMISSION");
+            highlightedMaterial.SetColor("_EmissionColor", material.color);
+            
+            // Add relevant components
+            XRSimpleInteractable candleBodyInteractable = candleBody.AddComponent<XRSimpleInteractable>();
+            candleBody.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedMaterial;
+            Rigidbody candleBodyRigidbody = candleBody.AddComponent<Rigidbody>();
+            candleBodyRigidbody.useGravity = false;
+            candleBodyRigidbody.isKinematic = true;
+            
+            XRSimpleInteractable candleWickInteractable = candleWick.AddComponent<XRSimpleInteractable>();
+            candleWick.AddComponent<OnHoverEnterEffect>().highlightMaterial = highlightedMaterial;
+            Rigidbody candleWickRigidbody = candleWick.AddComponent<Rigidbody>();
+            candleWickRigidbody.useGravity = false;
+            candleWickRigidbody.isKinematic = true;
 
-            // 7. Position the wick in the center (same x as body, but full height from low to high)
+            // Position the wick in the center (same x as body, but full height from low to high)
             candleWick.transform.localPosition = new Vector3(dataPoint.xCenter, (dataPoint.highY + dataPoint.lowY) / 2, 0);
 
-            // 8. Scale the wick (thin and tall)
+            // Scale the wick (thin and tall)
             candleWick.transform.localScale = new Vector3(3f, (dataPoint.highY - dataPoint.lowY) / 2, 3f);
+            
+            candleBodyInteractable.firstSelectEntered = new SelectEnterEvent();
+            candleWickInteractable.firstSelectEntered = new SelectEnterEvent();
+            candleBodyInteractable.firstSelectEntered.AddListener(_ => CandleOnPressed(rawDataPoint));
+            candleWickInteractable.firstSelectEntered.AddListener(_ => CandleOnPressed(rawDataPoint));
         }
 
         // Scale down the graph
@@ -424,6 +462,20 @@ public class CandlestickController : MonoBehaviour
             yLabelGroup.localRotation = new Quaternion(0, 0, 0, 0);
             yLabelGroup.localPosition = new Vector3(0, yAxisData.y / 10 + 4, 0);
         }
+    }
+
+    private void CandleOnPressed(DataPoint data)
+    {
+        Debug.Log($"The data that is selected: {data}");
+        // Find the details canvas
+        Transform detailCanvasTransform = transform.Find("CandlestickGraph").Find("DetailCanvas");
+
+        // Update the details canvas
+        detailCanvasTransform.Find("Image").Find("Time").GetComponent<TextMeshProUGUI>().text = $"{data.time.ToShortDateString()}";
+        detailCanvasTransform.Find("Image").Find("Open").GetComponent<TextMeshProUGUI>().text = $"{Math.Round(data.open, 2)}";
+        detailCanvasTransform.Find("Image").Find("High").GetComponent<TextMeshProUGUI>().text = $"{Math.Round(data.high, 2)}";
+        detailCanvasTransform.Find("Image").Find("Low").GetComponent<TextMeshProUGUI>().text = $"{Math.Round(data.low, 2)}";
+        detailCanvasTransform.Find("Image").Find("Close").GetComponent<TextMeshProUGUI>().text = $"{Math.Round(data.close, 2)}";
     }
 
     /// <summary>
