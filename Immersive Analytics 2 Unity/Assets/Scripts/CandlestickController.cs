@@ -337,7 +337,7 @@ public class CandlestickController : MonoBehaviour
             candleBody.transform.localPosition = new Vector3(dataPoint.xCenter, (dataPoint.openY + dataPoint.closeY) / 2, 0);
 
             // 3. Scale the body height (difference between open and close prices)
-            candleBody.transform.localScale = new Vector3(dataPoint.dayWidth, Math.Abs(dataPoint.closeY - dataPoint.openY), 1);
+            candleBody.transform.localScale = new Vector3(dataPoint.dayWidth, Math.Abs(dataPoint.closeY - dataPoint.openY), 10);
 
             // 4. Color the body (Green for bullish, Red for bearish)
             Renderer bodyRenderer = candleBody.GetComponent<Renderer>();
@@ -346,12 +346,17 @@ public class CandlestickController : MonoBehaviour
             // 5. Create the wick (Cylinder) for the high-low range
             GameObject candleWick = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             candleWick.transform.SetParent(candle.transform);
+            candleWick.transform.localRotation = Quaternion.identity;
+            
+            // 6. Color the wick (Same as the cube)
+            Renderer wickRenderer = candleWick.GetComponent<Renderer>();
+            wickRenderer.material.color = dataPoint.isBullish ? Color.green : Color.red;
 
-            // 6. Position the wick in the center (same x as body, but full height from low to high)
+            // 7. Position the wick in the center (same x as body, but full height from low to high)
             candleWick.transform.localPosition = new Vector3(dataPoint.xCenter, (dataPoint.highY + dataPoint.lowY) / 2, 0);
 
-            // 7. Scale the wick (thin and tall)
-            candleWick.transform.localScale = new Vector3(0.3f, (dataPoint.highY - dataPoint.lowY) / 2, 0.3f);
+            // 8. Scale the wick (thin and tall)
+            candleWick.transform.localScale = new Vector3(3f, (dataPoint.highY - dataPoint.lowY) / 2, 3f);
         }
 
         // Scale down the graph
