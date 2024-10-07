@@ -173,7 +173,7 @@ public class GeneralStockManager : MonoBehaviour
             using (StreamReader reader = process.StandardOutput)
             {
                 string result = reader.ReadToEnd();
-                // Debug.Log(result);
+                Debug.Log(result);
 
                 var stockDataDict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(result);
                 // Debug.Log(stockDataDict);
