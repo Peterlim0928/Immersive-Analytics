@@ -16,7 +16,6 @@ public class GeneralStockManager : MonoBehaviour
     // References the StockItemPrefab
     public GameObject StockItemPrefab;
     public Transform GeneralStockContent;
-
     public GameObject WatchlistItemPrefab;
     public Transform WatchlistContent;
 
@@ -81,8 +80,8 @@ public class GeneralStockManager : MonoBehaviour
             GeneralStockData castedStockData = (GeneralStockData)stockData;
 
             GameObject newStock = Instantiate(StockItemPrefab, GeneralStockContent);
-            newStock.GetComponent<Image>().color = counter++ % 2 == 0 
-                ? new Color(182 / 255f, 182 / 255f, 182 / 255f, 190 / 255f) 
+            newStock.GetComponent<Image>().color = counter++ % 2 == 0
+                ? new Color(182 / 255f, 182 / 255f, 182 / 255f, 190 / 255f)
                 : new Color(221 / 255f, 221 / 255f, 221 / 255f, 190 / 255f);
 
             TextMeshProUGUI stockSymbol = newStock.transform.Find("StockSymbol").GetComponent<TextMeshProUGUI>();

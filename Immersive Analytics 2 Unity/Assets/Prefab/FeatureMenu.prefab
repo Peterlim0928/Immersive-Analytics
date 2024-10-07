@@ -164,7 +164,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6436188176401526959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,6 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMenuShown: 0
   prefab: {fileID: 2085937279330388613, guid: a514806532c13604e8a5ffa55adaed26, type: 3}
+  companyInfoCanvas: {fileID: 0}
   moveButton: {fileID: 7862790720084220050}
   deleteButton: {fileID: 2941905336986886040}
 --- !u!114 &6142914058710039352

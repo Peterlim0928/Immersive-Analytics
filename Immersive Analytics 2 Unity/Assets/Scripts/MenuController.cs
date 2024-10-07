@@ -10,17 +10,19 @@ public class MenuController : MonoBehaviour
     // The prefab to create
     public GameObject prefab;
 
+    public GameObject companyInfoCanvas;
+
     public Button moveButton;
     public Button deleteButton;
 
     private bool _isMoveMode;
     private bool _isDeleteMode;
-    private Color _activeButtonColour = new Color(46/255f, 114/255f, 255/255f, 255/255f);
-    private Color _inactiveButtonColour = new Color(111/255f, 111/255f, 111/255f, 111/255f);
+    private Color _activeButtonColour = new Color(46 / 255f, 114 / 255f, 255 / 255f, 255 / 255f);
+    private Color _inactiveButtonColour = new Color(111 / 255f, 111 / 255f, 111 / 255f, 111 / 255f);
 
     private void Start()
     {
-        gameObject.SetActive(isMenuShown); 
+        gameObject.SetActive(isMenuShown);
     }
 
     public void ToggleMenu()
@@ -46,8 +48,14 @@ public class MenuController : MonoBehaviour
 
             // Find the button and attach the listener
             Button searchButton = newGraph.transform.Find("SearchCanvas").Find("Image").Find("StockSearchButton").GetComponent<Button>();
-            searchButton.onClick.AddListener(newGraph.GetComponent<CandlestickController>().ReadStockOptions);
+            searchButton.onClick.AddListener(() => SearchButtonOnClick(newGraph));
         }
+    }
+
+    public void SearchButtonOnClick(GameObject graphObject)
+    {
+        graphObject.GetComponent<CandlestickController>().ReadStockOptions();
+        companyInfoCanvas.GetComponent<CompanyInfoManager>().PopulateCompanyInfo(graphObject.GetComponent<CandlestickController>().stockCodeInputField.text);
     }
 
     public void OnMoveButtonPressed()

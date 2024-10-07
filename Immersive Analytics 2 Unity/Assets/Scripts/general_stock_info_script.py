@@ -18,6 +18,7 @@ def main(stock_code):
     financial_currency = info.get('financialCurrency', 'N/A')
     output_dict = {
         "Name": name,
+        "Stock Code": stock_code,
         "Country": country,
         "Website": website,
         "Sector": sector,
@@ -30,4 +31,4 @@ def main(stock_code):
 
 if __name__ == "__main__":
     _, stock_code = sys.argv
-    main(stock_code[1])
+    main(stock_code)
