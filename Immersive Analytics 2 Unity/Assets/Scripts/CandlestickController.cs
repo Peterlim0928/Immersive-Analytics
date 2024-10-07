@@ -379,7 +379,7 @@ public class CandlestickController : MonoBehaviour
             TextMeshPro textMesh = xAxisText.AddComponent<TextMeshPro>();
             textMesh.text = xAxisData.labelText;
             textMesh.fontSize = 20;
-            textMesh.color = Color.white;
+            textMesh.color = Color.black;
             textMesh.alignment = TextAlignmentOptions.Center;
             
             // Adjust the group transform
@@ -411,7 +411,7 @@ public class CandlestickController : MonoBehaviour
             TextMeshPro textMesh = yAxisText.AddComponent<TextMeshPro>();
             textMesh.text = yAxisData.labelText;
             textMesh.fontSize = 20;
-            textMesh.color = Color.white;
+            textMesh.color = Color.black;
             textMesh.alignment = TextAlignmentOptions.Center;
             
             // Adjust the group transform
