@@ -28,7 +28,7 @@ def main():
         # Stock information
         info = stock_data.info
         name = info.get('shortName', 'N/A')
-        current_price = info.get('currentPrice', 0)
+        current_price = round(info.get('currentPrice', 0), 2)
         previous_price = info.get('previousClose', 0)
         change = round(current_price - previous_price, 2)
         change_percent = round((change / previous_price) * 100, 2)

@@ -74,7 +74,7 @@ public class CandlestickController : MonoBehaviour
         
         _rodInitialScaling = transform.Find("CandlestickGraph").Find("X Axis Rod").localScale.x;
         _tipInitialPosition = transform.Find("CandlestickGraph").Find("X Axis Tip").localPosition.x;
-        _detailCanvasInitialPosition = transform.Find("CandlestickGraph").Find("DetailCanvas").localPosition.x;
+        _detailCanvasInitialPosition = transform.Find("DetailCanvas").localPosition.x;
         
         stockTimeDropdown.AddOptions(_stockTimeOptionList.ToList());
         stockRealTimeIntervalDropdown.AddOptions(_realTimeUpdateIntervalOptions.ToList());
@@ -299,13 +299,16 @@ public class CandlestickController : MonoBehaviour
                     yAxisTip.localPosition.z);
                 
                 // Move the details canvas based on how much the graph scaled
-                Transform detailCanvasTransform = transform.Find("CandlestickGraph").Find("DetailCanvas").transform;
+                Transform detailCanvasTransform = transform.Find("DetailCanvas").transform;
                 Vector3 detailCanvasPos = detailCanvasTransform.localPosition;
                 detailCanvasPos.x = _detailCanvasInitialPosition + scaling / 2.75f;
                 detailCanvasTransform.transform.localPosition = detailCanvasPos;
 
                 // Render the parsed data
                 RenderData(renderData);
+                
+                // Render the stock code x-axis label
+                transform.Find("CandlestickGraph").Find("LabelCanvas").Find("StockCodeBackground").Find("StockCode").GetComponent<TextMeshProUGUI>().text = _stockCode;
             }
             else
             {
@@ -517,7 +520,7 @@ public class CandlestickController : MonoBehaviour
     {
         Debug.Log($"The data that is selected: {data}");
         // Find the details canvas
-        Transform detailCanvasTransform = transform.Find("CandlestickGraph").Find("DetailCanvas");
+        Transform detailCanvasTransform = transform.Find("DetailCanvas");
 
         // Update the details canvas
         detailCanvasTransform.Find("Image").Find("Time").GetComponent<TextMeshProUGUI>().text = $"{data.time.ToShortDateString()}";
