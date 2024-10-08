@@ -9,6 +9,7 @@ using Debug = UnityEngine.Debug;
 using TMPro;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 
 public class CompanyInfoManager : MonoBehaviour
 {
@@ -36,13 +37,13 @@ public class CompanyInfoManager : MonoBehaviour
 
     }
 
-    public void PopulateCompanyInfo(string stockCode)
+    public async void PopulateCompanyInfo(string stockCode)
     {
         Debug.Log("Populating company info for stock code: " + stockCode);
-        RunPythonScript(stockCode);
+        await RunPythonScript(stockCode);
     }
 
-    public void RunPythonScript(string stockCode)
+    public async Task RunPythonScript(string stockCode)
     {
         ProcessStartInfo start = new ProcessStartInfo();
         start.FileName = "python";
@@ -52,33 +53,33 @@ public class CompanyInfoManager : MonoBehaviour
         start.RedirectStandardError = true;
         start.CreateNoWindow = true;
 
-        using (Process process = Process.Start(start))
-        {
-            using (StreamReader reader = process.StandardOutput)
+        CompanyInfo companyInfo = new CompanyInfo();
+        
+        await Task.Run(() => {
+            
+            using (Process process = Process.Start(start))
             {
-                string result = reader.ReadToEnd();
-
-                var companyInfoDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
-
-                CompanyInfo companyInfo = new CompanyInfo
+                using (StreamReader reader = process.StandardOutput)
                 {
-                    companyName = companyInfoDict["Name"],
-                    companyStockCode = companyInfoDict["Stock Code"],
-                    companyCountry = companyInfoDict["Country"],
-                    companySector = companyInfoDict["Sector"],
-                    companyLongBusinessSummary = companyInfoDict["Long Business Summary"],
-                    companyTotalRevenue = $"${companyInfoDict["Total Revenue"]}",
-                };
+                    string result = reader.ReadToEnd();
 
-                PopulateCompanyInfoUI(companyInfo);
-
+                    var companyInfoDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
+                    
+                    companyInfo.companyName = companyInfoDict["Name"];
+                    companyInfo.companyStockCode = companyInfoDict["Stock Code"];
+                    companyInfo.companyCountry = companyInfoDict["Country"];
+                    companyInfo.companySector = companyInfoDict["Sector"];
+                    companyInfo.companyLongBusinessSummary = companyInfoDict["Long Business Summary"];
+                    companyInfo.companyTotalRevenue = $"${companyInfoDict["Total Revenue"]}";
+                }
+                string error = process.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogError(error);
+                }
             }
-            string error = process.StandardError.ReadToEnd();
-            if (!string.IsNullOrEmpty(error))
-            {
-                Debug.LogError(error);
-            }
-        }
+        });
+        PopulateCompanyInfoUI(companyInfo);
     }
 
     public void PopulateCompanyInfoUI(CompanyInfo newCompanyInfo)
