@@ -25,22 +25,14 @@ public class CompanyInfoManager : MonoBehaviour
 
     private const string CompanyInfoScriptPath = "./Assets/Scripts/general_stock_info_script.py";
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public async void PopulateCompanyInfo(string stockCode)
     {
-        Debug.Log("Populating company info for stock code: " + stockCode);
         await RunPythonScript(stockCode);
+    }
+    
+    public bool IsFileValid(CompanyInfo companyInfo)
+    {
+        return companyInfo.companyName != "N/A";
     }
 
     public async Task RunPythonScript(string stockCode)
@@ -79,7 +71,10 @@ public class CompanyInfoManager : MonoBehaviour
                 }
             }
         });
-        PopulateCompanyInfoUI(companyInfo);
+        if (IsFileValid(companyInfo))
+        {
+            PopulateCompanyInfoUI(companyInfo);
+        }
     }
 
     public void PopulateCompanyInfoUI(CompanyInfo newCompanyInfo)

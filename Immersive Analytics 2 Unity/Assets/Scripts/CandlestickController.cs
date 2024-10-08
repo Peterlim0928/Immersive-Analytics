@@ -49,7 +49,7 @@ public class CandlestickController : MonoBehaviour
         "1 Day", "5 Days", "1 Month", "6 Months", "Year To Date", "1 Year", "5 Years", "Max"
     };
 
-    private readonly string[] _stockTimeList = 
+    public readonly string[] StockTimeList = 
     {
         "1d", "5d", "1mo", "6mo", "ytd", "1y", "5y", "max"
     };
@@ -106,7 +106,7 @@ public class CandlestickController : MonoBehaviour
         }
         
         _stockTimePeriod = stockTimeDropdown.value;
-        string chosenTime = _stockTimeList[_stockTimePeriod];
+        string chosenTime = StockTimeList[_stockTimePeriod];
 
         switch (stockTimeDropdown.value)
         {
@@ -200,10 +200,51 @@ public class CandlestickController : MonoBehaviour
             string pythonArgs = $"{_stockCode} {_stockTimeOption} {_stockTimeInterval}";
             await RunPythonScript(pythonScriptPath, pythonArgs);
 
-            UpdateGraph();
+            if (IsFileValid(Path.Combine(DataPath, $"{_stockCode}-{StockTimeList[_stockTimePeriod]}.csv")))
+            {
+                UpdateGraph();
+            }
+            else
+            {
+                return;
+            }
 
             // Wait for the next interval
             await Task.Delay(interval);
+        }
+    }
+
+    public bool IsFileValid(string filePath)
+    {
+        try
+        {
+            using (var reader = new StreamReader(filePath))
+            {
+                int rowCount = 0;
+                
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        rowCount++;
+                    }
+
+                    // If we have more than one row, it's valid (header + data)
+                    if (rowCount > 1)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            // If rowCount <= 1, it means only header or no rows at all
+            return false;
+        }
+        catch (FileNotFoundException)
+        {
+            Console.WriteLine("File not found.");
+            return false;
         }
     }
 
@@ -214,7 +255,7 @@ public class CandlestickController : MonoBehaviour
     public void UpdateGraph()
     {
         // Construct the file name and path based on stock code and time period
-        string fileName = $"{_stockCode}-{_stockTimeList[_stockTimePeriod]}.csv";
+        string fileName = $"{_stockCode}-{StockTimeList[_stockTimePeriod]}.csv";
         string filePath = Path.Combine(DataPath, fileName);
 
         if (File.Exists(filePath))
