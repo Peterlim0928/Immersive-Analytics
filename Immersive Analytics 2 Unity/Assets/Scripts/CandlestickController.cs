@@ -85,6 +85,13 @@ public class CandlestickController : MonoBehaviour
         _isRunning = false;
     }
 
+    private async void DisplayErrorMessage()
+    {
+        transform.Find("SearchCanvas").Find("Image").Find("ErrorMessage").GetComponent<TextMeshProUGUI>().text = "Invalid Stock Code";
+        await Task.Delay(5000);
+        transform.Find("SearchCanvas").Find("Image").Find("ErrorMessage").GetComponent<TextMeshProUGUI>().text = "";
+    }
+
     /// <summary>
     /// Reads stock options from the input field and dropdowns, then runs
     /// the Python script to download stock data. Also sets up real-time
@@ -102,7 +109,7 @@ public class CandlestickController : MonoBehaviour
         if (!Regex.IsMatch(stockCode, pattern))
         {
             Debug.LogError("Invalid stock code. Please enter a valid ticker symbol.");
-            return; // Exit the function if the input is invalid
+            DisplayErrorMessage(); // Display the error message if the input is invalid
         }
         
         _stockTimePeriod = stockTimeDropdown.value;
@@ -146,6 +153,7 @@ public class CandlestickController : MonoBehaviour
 
         await RunPythonScript(pythonScriptPath, pythonArgs);
         UpdateGraphRealTime();
+        
     }
 
     /// <summary>
@@ -206,7 +214,7 @@ public class CandlestickController : MonoBehaviour
             }
             else
             {
-                return;
+                DisplayErrorMessage();
             }
 
             // Wait for the next interval
