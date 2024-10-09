@@ -21,7 +21,7 @@ def main():
     
     oil_gas_stock_codes = ["XOM", "CVX", "SHEL", "TTE", "PB", "BP", "CRGY", "NFG", "SU", "IMO", "EQNR"]
 
-    consumer_electronics_stock_codes = ["MSN", "HEAR", "SONY", "GPRO", "LPL", "AAPL", "FOXX", "FEBO"]
+    consumer_electronics_stock_codes = ["MSN", "HEAR", "SONY", "GPRO", "LPL", "AAPL", "FEBO"]
 
     auto_manufactures_stock_codes = ["TSLA", "XPEV", "HMC", "TM", "LI", "GM", "F", "NIO", "ZK", "LOT", "RACE"]
     

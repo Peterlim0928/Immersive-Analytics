@@ -86,15 +86,15 @@ public class StockMarketNewsManager : MonoBehaviour
 
     public void InitialiseGeneralStockNewsData()
     {
-        // RunPythonScript();
-        GeneralNews generalNews = new GeneralNews();
-        generalNews.generalNewsTitle = "Huge News for Apple Stock Investors";
-        generalNews.generalNewsSource = "NASDAQ";
-        generalNews.generalNewsDateTime = "Oct_03_20224";
-        generalNews.generalNewsImageURL = "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg";
-        generalNews.generalNewsSentimentCategory = "bearish";
-        generalNews.specificNewsURL = "https://finance.yahoo.com/news/apple-plans-open-four-stores-131707836.html";
-        generalNewsData.Add(generalNews);
+        RunPythonScript();
+        // GeneralNews generalNews = new GeneralNews();
+        // generalNews.generalNewsTitle = "Huge News for Apple Stock Investors";
+        // generalNews.generalNewsSource = "NASDAQ";
+        // generalNews.generalNewsDateTime = "Oct_03_20224";
+        // generalNews.generalNewsImageURL = "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg";
+        // generalNews.generalNewsSentimentCategory = "bearish";
+        // generalNews.specificNewsURL = "https://finance.yahoo.com/news/apple-plans-open-four-stores-131707836.html";
+        // generalNewsData.Add(generalNews);
     }
 
     public void PopulateGeneralStockNewsDataUI()
