@@ -309,6 +309,8 @@ public class CandlestickController : MonoBehaviour
                 
                 // Render the stock code x-axis label
                 transform.Find("CandlestickGraph").Find("LabelCanvas").Find("StockCodeBackground").Find("StockCode").GetComponent<TextMeshProUGUI>().text = _stockCode;
+                transform.Find("SearchCanvas").Find("StockCodeBackground").Find("StockCode").GetComponent<TextMeshProUGUI>().text = _stockCode;
+                transform.Find("DetailCanvas").Find("StockCodeBackground").Find("StockCode").GetComponent<TextMeshProUGUI>().text = _stockCode;
             }
             else
             {
