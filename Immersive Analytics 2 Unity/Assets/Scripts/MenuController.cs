@@ -64,7 +64,7 @@ public class MenuController : MonoBehaviour
         _isDeleteMode = false;
 
         moveButton.GetComponent<Image>().color = _isMoveMode ? _activeButtonColour : _inactiveButtonColour;
-        deleteButton.GetComponent<Image>().color = _inactiveButtonColour;
+        // deleteButton.GetComponent<Image>().color = _inactiveButtonColour;
 
         GameObject[] moveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
 

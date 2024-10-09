@@ -86,8 +86,11 @@ public class TreemapController : MonoBehaviour
                     parent.data = Math.Abs(tempData);
                     parent.stockCode = outerTreeData.Key;
                     parent.positive = tempData > 0;
-                    
-                    _parsedData.Add(parent);
+
+                    if (parent.data > 0)
+                    {
+                        _parsedData.Add(parent);
+                    }
                 }
                 
                 // Sort in descending order
