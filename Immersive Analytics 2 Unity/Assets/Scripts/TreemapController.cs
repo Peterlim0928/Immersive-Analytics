@@ -68,8 +68,11 @@ public class TreemapController : MonoBehaviour
                         fieldData.data = Math.Abs(value);
                         fieldData.stockCode = innerTreeData.Key;
                         fieldData.positive = value > 0;
-                        
-                        child.Add(fieldData);
+
+                        if (fieldData.data > 0)
+                        {
+                            child.Add(fieldData);
+                        }
                     }
                     
                     // Sort in descending order
