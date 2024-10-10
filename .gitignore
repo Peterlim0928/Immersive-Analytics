@@ -11,6 +11,7 @@ Immersive Analytics Unity/Logs/
 Immersive Analytics 2 Unity/Logs/
 
 # Ignore all generated stock dataset
+!Immersive Analytics Unity/Assets/IATK/Datasets/companies.csv
 Immersive Analytics Unity/Assets/IATK/Datasets/[A-Z][A-Z][A-Z][A-Z]*.csv
 Immersive Analytics Unity/Assets/IATK/Datasets/[A-Z][A-Z][A-Z][A-Z]*.csv.meta
 Immersive Analytics 2 Unity/Assets/Datasets/[A-Z][A-Z][A-Z][A-Z]*.csv
