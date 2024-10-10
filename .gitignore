@@ -1,26 +1,21 @@
 # Ignore all .vscode settings
-Immersive Analytics Unity/.vscode/
-Immersive Analytics 2 Unity/.vscode/
+ImmersiveAnalyticsUnity/.vscode/
 
 # Ignore all .idea settings
-Immersive Analytics Unity/.idea/
-Immersive Analytics 2 Unity/.idea/
+ImmersiveAnalyticsUnity/.idea/
 
 # Ignore all log files in Unity
-Immersive Analytics Unity/Logs/
-Immersive Analytics 2 Unity/Logs/
+ImmersiveAnalyticsUnity/Logs/
 
 # Ignore all generated stock dataset
-Immersive Analytics Unity/Assets/IATK/Datasets/[A-Z][A-Z][A-Z]*.csv
-Immersive Analytics Unity/Assets/IATK/Datasets/[A-Z][A-Z][A-Z]*.csv.meta
-Immersive Analytics 2 Unity/Assets/Datasets/[A-Z][A-Z][A-Z]*.csv
-Immersive Analytics 2 Unity/Assets/Datasets/[A-Z][A-Z][A-Z]*.csv.meta
-!Immersive Analytics 2 Unity/Assets/Datasets/companies.csv
+ImmersiveAnalyticsUnity/Assets/Datasets/[A-Z][A-Z][A-Z]*.csv
+ImmersiveAnalyticsUnity/Assets/Datasets/[A-Z][A-Z][A-Z]*.csv.meta
+!ImmersiveAnalyticsUnity/Assets/Datasets/companies.csv
 
 # Unity generated files
-Immersive Analytics 2 Unity/[Tt]emp/
-Immersive Analytics 2 Unity/[Oo]bj/
-Immersive Analytics 2 Unity/[Bb]uild
-Immersive Analytics 2 Unity/[Bb]uild[s]
-Immersive Analytics 2 Unity/[Ll]ibrary/
-Immersive Analytics 2 Unity/UserSettings/
+ImmersiveAnalyticsUnity/[Tt]emp/
+ImmersiveAnalyticsUnity/[Oo]bj/
+ImmersiveAnalyticsUnity/[Bb]uild
+ImmersiveAnalyticsUnity/[Bb]uild[s]
+ImmersiveAnalyticsUnity/[Ll]ibrary/
+ImmersiveAnalyticsUnity/UserSettings/

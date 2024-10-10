@@ -1,4 +1,2 @@
-Immersive[[:space:]]Analytics[[:space:]]2[[:space:]]Unity/Library/ArtifactDB filter=lfs diff=lfs merge=lfs -text
-Immersive[[:space:]]Analytics[[:space:]]2[[:space:]]Unity/Library/PackageCache/com.unity.burst@1.8.16/.Runtime/libburst-llvm-16.dylib filter=lfs diff=lfs merge=lfs -text
 ImmersiveAnalyticsUnity/Library/ArtifactDB filter=lfs diff=lfs merge=lfs -text
 ImmersiveAnalyticsUnity/Library/PackageCache/com.unity.burst@1.8.16/.Runtime/libburst-llvm-16.dylib filter=lfs diff=lfs merge=lfs -text
