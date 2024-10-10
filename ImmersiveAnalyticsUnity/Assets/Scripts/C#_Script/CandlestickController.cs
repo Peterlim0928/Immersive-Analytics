@@ -19,7 +19,7 @@ using Debug = UnityEngine.Debug;
 public class CandlestickController : MonoBehaviour
 {
     // Path for downloading the Python script
-    private const string ScriptPath = "./Assets/Scripts/Python_API_Script/script.py";
+    private const string ScriptPath = "./Assets/Scripts/Python_Script/script.py";
     private const string DataPath = "./Assets/Datasets/";
 
     // Stock code input field and dropdowns

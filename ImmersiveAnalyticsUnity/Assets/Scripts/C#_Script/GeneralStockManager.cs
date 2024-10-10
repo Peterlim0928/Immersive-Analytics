@@ -48,7 +48,7 @@ public class GeneralStockManager : MonoBehaviour
 
 
 
-    private const string GeneralStockDataScriptPath = "./Assets/Scripts/Python_API_Script/general_stock_data_script.py";
+    private const string GeneralStockDataScriptPath = "./Assets/Scripts/Python_Script/general_stock_data_script.py";
 
     // Sprites for heart icons
     public Sprite emptyHeartSprite;

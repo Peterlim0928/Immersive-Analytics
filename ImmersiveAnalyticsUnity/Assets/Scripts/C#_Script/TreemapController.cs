@@ -20,7 +20,7 @@ public class TreemapController : MonoBehaviour
     private double _canvasWidth;
     private double _canvasHeight;
     
-    private const string TreeDataScriptPath = "./Assets/Scripts/Python_API_Script/script_tree_map.py";
+    private const string TreeDataScriptPath = "./Assets/Scripts/Python_Script/script_tree_map.py";
     
     // Start is called before the first frame update
     void Start()
