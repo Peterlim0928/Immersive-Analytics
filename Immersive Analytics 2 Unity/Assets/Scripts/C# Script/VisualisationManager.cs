@@ -9,7 +9,7 @@ using Debug = UnityEngine.Debug;
 public class VisualisationManager : MonoBehaviour
 {
     // Path for downloading script
-    private const string ScriptPath = "./Assets/Scripts/script.py";
+    private const string ScriptPath = "./Assets/Scripts/Python API Script/script.py";
     private const string DataPath = "./Assets/Datasets/";
     
     // Stock code textbox

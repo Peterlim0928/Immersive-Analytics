@@ -15,7 +15,7 @@ def main():
 
     # Randomly select 20 stock codes
     num_of_stocks = 50
-    stock_codes_csv = pd.read_csv("./Assets/Scripts/companies.csv")
+    stock_codes_csv = pd.read_csv("./Assets/Datasets/companies.csv")
     stock_codes = stock_codes_csv["Symbol"].tolist()
     selected_stock_codes = random.sample(stock_codes, num_of_stocks)
 

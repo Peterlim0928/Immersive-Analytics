@@ -34,8 +34,8 @@ public class StockMarketNewsManager : MonoBehaviour
 
     public List<GeneralNews> generalNewsData = new List<GeneralNews>();
 
-    private const string GeneralStockMarketNewsScriptPath = "./Assets/Scripts/script_general_stock_market_news.py";
-    private const string RetrieveWebpageScriptPath = "./Assets/Scripts/script_url_screenshot_retrieval.py";
+    private const string GeneralStockMarketNewsScriptPath = "./Assets/Scripts/Python API Script/script_general_stock_market_news.py";
+    private const string RetrieveWebpageScriptPath = "./Assets/Scripts/Python API Script/script_url_screenshot_retrieval.py";
 
     // Start is called before the first frame update
     void Start()

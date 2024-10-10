@@ -23,7 +23,7 @@ public class CompanyInfoManager : MonoBehaviour
         public string companyTotalRevenue;
     }
 
-    private const string CompanyInfoScriptPath = "./Assets/Scripts/general_stock_info_script.py";
+    private const string CompanyInfoScriptPath = "./Assets/Scripts/Python API Script/general_stock_info_script.py";
 
     public async void PopulateCompanyInfo(string stockCode)
     {
