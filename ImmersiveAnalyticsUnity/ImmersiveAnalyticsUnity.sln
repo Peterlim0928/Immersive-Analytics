@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.XR.Interaction.Toolkit.Samples.StarterAssets", "Unity.XR.Interaction.Toolkit.Samples.StarterAssets.csproj", "{2477bfb3-4304-bfaa-3395-4c200df20afd}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard", "Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard.csproj", "{c7bc6607-58f9-f342-637a-931e0dff5da2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard.Editor", "Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard.Editor.csproj", "{d6ed2adb-a4ea-fecf-d71d-e88372c7a15b}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{be8ec737-3948-c770-5b55-940799a1e661}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.XR.Interaction.Toolkit.Samples.DeviceSimulator", "Unity.XR.Interaction.Toolkit.Samples.DeviceSimulator.csproj", "{b396b7bb-6248-74f0-9a61-f9259ffc74d7}"
@@ -16,6 +20,10 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2477bfb3-4304-bfaa-3395-4c200df20afd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2477bfb3-4304-bfaa-3395-4c200df20afd}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{c7bc6607-58f9-f342-637a-931e0dff5da2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{c7bc6607-58f9-f342-637a-931e0dff5da2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{d6ed2adb-a4ea-fecf-d71d-e88372c7a15b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{d6ed2adb-a4ea-fecf-d71d-e88372c7a15b}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{be8ec737-3948-c770-5b55-940799a1e661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{be8ec737-3948-c770-5b55-940799a1e661}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{b396b7bb-6248-74f0-9a61-f9259ffc74d7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

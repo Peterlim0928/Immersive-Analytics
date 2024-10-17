@@ -921,6 +921,14 @@
       <Project>{259d6bfa-8315-cbfe-3416-9f9bccc15857}</Project>
       <Name>Unity.XR.Interaction.Toolkit.Samples.StarterAssets.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard.Editor.csproj">
+      <Project>{d6ed2adb-a4ea-fecf-d71d-e88372c7a15b}</Project>
+      <Name>Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard.csproj">
+      <Project>{c7bc6607-58f9-f342-637a-931e0dff5da2}</Project>
+      <Name>Unity.XR.Interaction.Toolkit.Samples.SpatialKeyboard</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.XR.Interaction.Toolkit.Samples.DeviceSimulator.csproj">
       <Project>{b396b7bb-6248-74f0-9a61-f9259ffc74d7}</Project>
       <Name>Unity.XR.Interaction.Toolkit.Samples.DeviceSimulator</Name>
