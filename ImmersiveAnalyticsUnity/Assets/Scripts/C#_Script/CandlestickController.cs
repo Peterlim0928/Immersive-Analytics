@@ -142,7 +142,6 @@ public class CandlestickController : MonoBehaviour
                 _stockTimeInterval = "3mo";
                 break;
         }
-        
         // Run the Python script to download stock data
         string pythonScriptPath = ScriptPath;
         string pythonArgs = $"{stockCodeInputField.text} {chosenTime} {_stockTimeInterval}";
@@ -153,7 +152,6 @@ public class CandlestickController : MonoBehaviour
 
         await RunPythonScript(pythonScriptPath, pythonArgs);
         UpdateGraphRealTime();
-        
     }
 
     /// <summary>
